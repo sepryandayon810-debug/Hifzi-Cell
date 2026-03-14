@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hifzi Cell - Kasir Pintar Cloud</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Tambahkan Tesseract.js untuk OCR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -303,6 +305,8 @@
             position: relative;
             mask-image: linear-gradient(to right, black 90%, transparent 100%);
             -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+            /* Simpan posisi scroll */
+            scroll-behavior: smooth;
         }
 
         /* Scroll hint gradient on left */
@@ -644,6 +648,26 @@
             letter-spacing: 1px;
         }
 
+        .transaction-item.deleted {
+            opacity: 0.5;
+            background: #ffebee;
+        }
+
+        .transaction-item.deleted::after {
+            content: 'DIHAPUS';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #666;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
         .transaction-info {
             flex: 1;
             min-width: 0;
@@ -696,6 +720,11 @@
         }
 
         .action-btn.void {
+            background: #ffebee;
+            color: var(--danger);
+        }
+
+        .action-btn.delete {
             background: #ffebee;
             color: var(--danger);
         }
@@ -1925,6 +1954,163 @@
             margin-top: 5px;
         }
 
+        /* NEW: OCR Receipt Styles */
+        .ocr-upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+            margin-bottom: 15px;
+        }
+
+        .ocr-upload-area:hover {
+            border-color: var(--primary);
+            background: #f0f3ff;
+        }
+
+        .ocr-upload-area.dragover {
+            border-color: var(--primary);
+            background: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .ocr-upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .ocr-upload-text {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .ocr-upload-sub {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .ocr-preview {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .ocr-progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .ocr-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        .ocr-result-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .ocr-result-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .ocr-data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ocr-data-row:last-child {
+            border-bottom: none;
+        }
+
+        .ocr-data-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .ocr-data-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .ocr-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .ocr-status.success {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+
+        .ocr-status.error {
+            background: #ffebee;
+            color: var(--danger);
+        }
+
+        .ocr-status.processing {
+            background: #e3f2fd;
+            color: var(--info);
+        }
+
+        .receipt-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .receipt-type-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .receipt-type-btn.active {
+            border-color: var(--primary);
+            background: #f0f3ff;
+            color: var(--primary);
+        }
+
+        .receipt-type-btn .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .receipt-type-btn .label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
         @media (max-width: 380px) {
             .products-grid {
                 grid-template-columns: 1fr;
@@ -1939,9 +2125,75 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f0f0f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        /* Save button loading state */
+        .btn.saving {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+
+        .btn.saving::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #f0f0f0;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Menyimpan data...</div>
+    </div>
+
     <!-- Header -->
     <div class="header">
         <div class="header-top">
@@ -1985,6 +2237,7 @@
         <button class="nav-tab" onclick="app.switchTab('cash')">💵 Kas</button>
         <button class="nav-tab" onclick="app.switchTab('reports')">📊 Laporan</button>
         <button class="nav-tab" onclick="app.switchTab('transactions')">📝 Transaksi</button>
+        <button class="nav-tab" onclick="app.switchTab('receipt')">🧾 Struk</button>
         <button class="nav-tab" onclick="app.switchTab('backup')">☁️ Cloud</button>
     </div>
 
@@ -2237,6 +2490,7 @@
                 <button class="filter-btn active" onclick="app.setTransactionFilter('all')">Semua</button>
                 <button class="filter-btn" onclick="app.setTransactionFilter('today')">Hari Ini</button>
                 <button class="filter-btn" onclick="app.setTransactionFilter('voided')">Dibatalkan</button>
+                <button class="filter-btn" onclick="app.setTransactionFilter('deleted')">Dihapus</button>
             </div>
         </div>
 
@@ -2246,6 +2500,121 @@
                 <span style="font-size: 12px; color: #666;" id="transactionListCount">0 transaksi</span>
             </div>
             <div class="transaction-list" id="transactionManagementList"></div>
+        </div>
+    </div>
+
+    <!-- NEW: Receipt/OCR Section -->
+    <div class="content-section" id="receiptSection">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🧾 Struk Digital & OCR</span>
+            </div>
+            
+            <div class="receipt-type-selector">
+                <button class="receipt-type-btn active" onclick="app.setReceiptType('tarik')" id="receiptTarik">
+                    <div class="icon">🏧</div>
+                    <div class="label">Tarik Tunai</div>
+                </button>
+                <button class="receipt-type-btn" onclick="app.setReceiptType('topup')" id="receiptTopup">
+                    <div class="icon">💜</div>
+                    <div class="label">Top Up</div>
+                </button>
+                <button class="receipt-type-btn" onclick="app.setReceiptType('transfer')" id="receiptTransfer">
+                    <div class="icon">🏦</div>
+                    <div class="label">Transfer</div>
+                </button>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">📸 Upload Bukti Transfer</div>
+                <div class="info-text">
+                    Upload screenshot bukti transfer dari bank/e-wallet. Sistem akan otomatis membaca detail transaksi.
+                </div>
+            </div>
+
+            <div class="ocr-upload-area" id="ocrUploadArea" onclick="document.getElementById('ocrFileInput').click()">
+                <div class="ocr-upload-icon">📷</div>
+                <div class="ocr-upload-text">Tap untuk upload gambar</div>
+                <div class="ocr-upload-sub">Format: JPG, PNG, JPEG</div>
+            </div>
+            
+            <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="app.handleOCRUpload(this)">
+
+            <div id="ocrPreviewContainer" style="display: none;">
+                <img id="ocrPreview" class="ocr-preview" alt="Preview">
+                <div class="ocr-progress" id="ocrProgress" style="display: none;">
+                    <div class="ocr-progress-bar" id="ocrProgressBar" style="width: 0%"></div>
+                </div>
+                <div id="ocrStatus" class="ocr-status processing" style="display: none;">Memproses...</div>
+            </div>
+
+            <div class="ocr-result-box" id="ocrResultBox" style="display: none;">
+                <div class="ocr-result-title">📋 Hasil Pembacaan</div>
+                <div id="ocrResultContent"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="app.processOCRResult()" id="btnProcessOCR" style="width: 100%; margin-top: 15px; display: none;">
+                ✅ Simpan ke Transaksi
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📝 Input Manual Struk</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Jenis Transaksi</label>
+                <select id="manualReceiptType">
+                    <option value="tarik">Tarik Tunai</option>
+                    <option value="topup">Top Up</option>
+                    <option value="transfer">Transfer Bank</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Bank/E-Wallet</label>
+                <select id="manualBankType">
+                    <option value="bri">BANK BRI</option>
+                    <option value="bca">BANK BCA</option>
+                    <option value="bni">BANK BNI</option>
+                    <option value="mandiri">BANK MANDIRI</option>
+                    <option value="dana">DANA</option>
+                    <option value="gopay">GoPay</option>
+                    <option value="ovo">OVO</option>
+                    <option value="shopeepay">ShopeePay</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nominal (Rp)</label>
+                    <input type="number" id="manualNominal" placeholder="0" inputmode="numeric">
+                </div>
+                <div class="form-group">
+                    <label>Admin (Rp)</label>
+                    <input type="number" id="manualAdmin" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Pengirim</label>
+                <input type="text" id="manualSender" placeholder="Nama pengirim">
+            </div>
+
+            <div class="form-group">
+                <label>Nama Penerima</label>
+                <input type="text" id="manualReceiver" placeholder="Nama penerima">
+            </div>
+
+            <div class="form-group">
+                <label>No. Referensi</label>
+                <input type="text" id="manualRef" placeholder="Nomor referensi transaksi">
+            </div>
+            
+            <button class="btn btn-success" onclick="app.saveManualReceipt()" style="width: 100%;">
+                💾 Simpan Struk
+            </button>
         </div>
     </div>
 
@@ -2322,7 +2691,7 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0;">
                     <span>Versi Aplikasi</span>
-                    <b>Hifzi Cell 3.2 Cloud</b>
+                    <b>Hifzi Cell 3.3 Cloud</b>
                 </div>
             </div>
         </div>
@@ -2366,7 +2735,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('cashModal')">Batal</button>
-                <button class="btn btn-primary" onclick="app.saveCashTransaction()">Simpan</button>
+                <button class="btn btn-primary" onclick="app.saveCashTransaction()" id="btnSaveCash">Simpan</button>
             </div>
         </div>
     </div>
@@ -2414,7 +2783,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('modalAwalModal')">Batal</button>
-                <button class="btn btn-warning" onclick="app.saveModalAwal()">Simpan Modal Awal</button>
+                <button class="btn btn-warning" onclick="app.saveModalAwal()" id="btnSaveModalAwal">Simpan Modal Awal</button>
             </div>
         </div>
     </div>
@@ -2465,7 +2834,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('topUpModal')">Batal</button>
-                <button class="btn btn-purple" onclick="app.prosesTopUp()">Proses Top Up</button>
+                <button class="btn btn-purple" onclick="app.prosesTopUp()" id="btnSaveTopUp">Proses Top Up</button>
             </div>
         </div>
     </div>
@@ -2497,7 +2866,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('tarikTunaiModal')">Batal</button>
-                <button class="btn btn-info" onclick="app.prosesTarikTunai()">Proses Tarik Tunai</button>
+                <button class="btn btn-info" onclick="app.prosesTarikTunai()" id="btnSaveTarik">Proses Tarik Tunai</button>
             </div>
         </div>
     </div>
@@ -2537,7 +2906,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('adminFeeModal')">Batal</button>
-                <button class="btn btn-success" onclick="app.saveAdminFee()">Catat Admin</button>
+                <button class="btn btn-success" onclick="app.saveAdminFee()" id="btnSaveAdmin">Catat Admin</button>
             </div>
         </div>
     </div>
@@ -2575,15 +2944,15 @@
                 <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="changeAmount">Rp 0</div>
             </div>
 
-            <!-- NEW: Print option checkbox -->
+            <!-- MODIFIED: Print checkbox tetap ada tapi tidak otomatis print -->
             <div class="checkbox-group" onclick="document.getElementById('autoPrint').click()">
-                <input type="checkbox" id="autoPrint" checked>
+                <input type="checkbox" id="autoPrint">
                 <label for="autoPrint">🖨️ Cetak struk setelah pembayaran</label>
             </div>
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('checkoutModal')">Batal</button>
-                <button class="btn btn-primary" onclick="app.processPayment()">Proses Bayar</button>
+                <button class="btn btn-primary" onclick="app.processPayment()" id="btnProcessPayment">Proses Bayar</button>
             </div>
         </div>
     </div>
@@ -2625,7 +2994,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('productModal')">Batal</button>
-                <button class="btn btn-primary" onclick="app.saveProduct()">Simpan</button>
+                <button class="btn btn-primary" onclick="app.saveProduct()" id="btnSaveProduct">Simpan</button>
             </div>
         </div>
     </div>
@@ -2701,7 +3070,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('importExcelModal')">Batal</button>
-                <button class="btn btn-success" onclick="app.confirmExcelImport()">✅ Import Data</button>
+                <button class="btn btn-success" onclick="app.confirmExcelImport()" id="btnConfirmImport">✅ Import Data</button>
             </div>
         </div>
     </div>
@@ -2745,7 +3114,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('batchStockModal')">Batal</button>
-                <button class="btn btn-success" onclick="app.saveBatchStock()">💾 Simpan Perubahan</button>
+                <button class="btn btn-success" onclick="app.saveBatchStock()" id="btnSaveBatch">💾 Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -2782,7 +3151,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('settingsModal')">Tutup</button>
-                <button class="btn btn-primary" onclick="app.saveSettings()">Simpan</button>
+                <button class="btn btn-primary" onclick="app.saveSettings()" id="btnSaveSettings">Simpan</button>
             </div>
         </div>
     </div>
@@ -2817,7 +3186,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('cloudConfigModal')">Batal</button>
-                <button class="btn btn-primary" onclick="app.saveCloudConfig()" type="button">Simpan & Test</button>
+                <button class="btn btn-primary" onclick="app.saveCloudConfig()" type="button" id="btnSaveCloud">Simpan & Test</button>
             </div>
         </div>
     </div>
@@ -2871,7 +3240,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('editTransactionModal')">Batal</button>
-                <button class="btn btn-primary" onclick="app.saveEditTransaction()">Simpan Perubahan</button>
+                <button class="btn btn-primary" onclick="app.saveEditTransaction()" id="btnSaveEdit">Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -2915,7 +3284,50 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('voidTransactionModal')">Tutup</button>
-                <button class="btn btn-danger" onclick="app.confirmVoidTransaction()">Batalkan Transaksi</button>
+                <button class="btn btn-danger" onclick="app.confirmVoidTransaction()" id="btnConfirmVoid">Batalkan Transaksi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Delete Transaction Modal (Permanent) -->
+    <div class="modal" id="deleteTransactionModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <span class="modal-title">🗑️ Hapus Transaksi Permanen</span>
+                <button class="close-btn" onclick="app.closeModal('deleteTransactionModal')">×</button>
+            </div>
+            
+            <div class="void-reason-box" style="background: #f5f5f5; border-left-color: #666;">
+                <div class="void-reason-title" style="color: #666;">⚠️ Transaksi akan dihapus permanen!</div>
+                <div style="font-size: 13px; color: #666;">
+                    Total transaksi akan dikurangi dari laporan dan kas akan disesuaikan. Tindakan ini tidak bisa dibatalkan.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Alasan Penghapusan *</label>
+                <select id="deleteReason">
+                    <option value="data_salah">Data Salah Total</option>
+                    <option value="duplikat">Transaksi Duplikat</option>
+                    <option value="testing">Data Testing</option>
+                    <option value="lainnya">Lainnya</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan Tambahan</label>
+                <textarea id="deleteNote" rows="3" placeholder="Jelaskan alasan penghapusan..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Password Konfirmasi *</label>
+                <input type="password" id="deletePassword" placeholder="Masukkan password" value="admin">
+                <div style="font-size: 11px; color: #999; margin-top: 5px;">Default: admin</div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('deleteTransactionModal')">Tutup</button>
+                <button class="btn btn-danger" onclick="app.confirmDeleteTransaction()" id="btnConfirmDelete">Hapus Permanen</button>
             </div>
         </div>
     </div>
@@ -2941,7 +3353,7 @@
             
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('refundModal')">Batal</button>
-                <button class="btn btn-warning" onclick="app.processRefund()">Proses Retur</button>
+                <button class="btn btn-warning" onclick="app.processRefund()" id="btnProcessRefund">Proses Retur</button>
             </div>
         </div>
     </div>
@@ -3014,6 +3426,16 @@
             // NEW: Batch stock state
             batchStockMode: 'set', // 'set' or 'add'
             batchStockData: {},
+
+            // NEW: Category scroll position
+            categoryScrollPosition: 0,
+
+            // NEW: OCR state
+            ocrData: null,
+            receiptType: 'tarik',
+
+            // NEW: Save operation lock
+            isSaving: false,
 
             init() {
                 console.log('Initializing Hifzi Cell...');
@@ -3131,6 +3553,37 @@
                 if (modalAwalInput) {
                     modalAwalInput.addEventListener('input', () => this.updateModalAwalPreview());
                 }
+
+                // OCR drag and drop
+                const ocrUploadArea = document.getElementById('ocrUploadArea');
+                if (ocrUploadArea) {
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        ocrUploadArea.addEventListener(eventName, (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }, false);
+                    });
+
+                    ['dragenter', 'dragover'].forEach(eventName => {
+                        ocrUploadArea.addEventListener(eventName, () => {
+                            ocrUploadArea.classList.add('dragover');
+                        }, false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(eventName => {
+                        ocrUploadArea.addEventListener(eventName, () => {
+                            ocrUploadArea.classList.remove('dragover');
+                        }, false);
+                    });
+
+                    ocrUploadArea.addEventListener('drop', (e) => {
+                        const dt = e.dataTransfer;
+                        const files = dt.files;
+                        if (files.length) {
+                            this.handleOCRFile(files[0]);
+                        }
+                    }, false);
+                }
             },
 
             // ==================== MODAL AWAL (NEW) ====================
@@ -3151,7 +3604,9 @@
                 document.getElementById('totalCashAfter').textContent = 'Rp ' + this.formatNumber(total);
             },
 
-            saveModalAwal() {
+            async saveModalAwal() {
+                if (this.isSaving) return;
+                
                 const amount = parseInt(document.getElementById('modalAwalInput').value) || 0;
                 const note = document.getElementById('modalAwalNote').value || 'Modal Awal Shift';
 
@@ -3160,30 +3615,38 @@
                     return;
                 }
 
-                // Update settings
-                this.data.settings.modalAwal = amount;
-                this.data.settings.currentCash += amount;
+                this.setLoading(true, 'modalAwalModal');
+                this.isSaving = true;
 
-                // Record in cash transactions
-                this.data.cashTransactions.push({
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    type: 'modal_in',
-                    amount: amount,
-                    category: 'modal_awal',
-                    note: note
-                });
+                try {
+                    // Update settings
+                    this.data.settings.modalAwal = amount;
+                    this.data.settings.currentCash += amount;
 
-                // Update shift data
-                this.data.shift.modalAwal = amount;
+                    // Record in cash transactions
+                    this.data.cashTransactions.push({
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        type: 'modal_in',
+                        amount: amount,
+                        category: 'modal_awal',
+                        note: note
+                    });
 
-                this.saveData();
-                this.closeModal('modalAwalModal');
-                this.updateCashDisplay();
-                this.updateCashStats();
-                this.renderCashTransactions();
+                    // Update shift data
+                    this.data.shift.modalAwal = amount;
 
-                this.showToast(`Modal awal Rp ${this.formatNumber(amount)} tersimpan dan ditambahkan ke kas!`);
+                    await this.saveDataAsync();
+                    this.closeModal('modalAwalModal');
+                    this.updateCashDisplay();
+                    this.updateCashStats();
+                    this.renderCashTransactions();
+
+                    this.showToast(`Modal awal Rp ${this.formatNumber(amount)} tersimpan dan ditambahkan ke kas!`);
+                } finally {
+                    this.setLoading(false, 'modalAwalModal');
+                    this.isSaving = false;
+                }
             },
 
             // ==================== BATCH STOCK UPDATE (NEW) ====================
@@ -3293,7 +3756,9 @@
                 document.getElementById('batchTotalProducts').textContent = filledCount;
             },
 
-            saveBatchStock() {
+            async saveBatchStock() {
+                if (this.isSaving) return;
+                
                 const updates = Object.keys(this.batchStockData);
                 
                 if (updates.length === 0) {
@@ -3301,39 +3766,47 @@
                     return;
                 }
                 
-                let updatedCount = 0;
-                
-                updates.forEach(productId => {
-                    const product = this.data.products.find(p => p.id == productId);
-                    if (product) {
-                        const newValue = this.batchStockData[productId];
-                        
-                        if (this.batchStockMode === 'set') {
-                            // Set mode: replace stock
-                            product.stock = newValue;
-                        } else {
-                            // Add mode: add to existing
-                            product.stock = (product.stock || 0) + newValue;
+                this.setLoading(true, 'batchStockModal');
+                this.isSaving = true;
+
+                try {
+                    let updatedCount = 0;
+                    
+                    updates.forEach(productId => {
+                        const product = this.data.products.find(p => p.id == productId);
+                        if (product) {
+                            const newValue = this.batchStockData[productId];
+                            
+                            if (this.batchStockMode === 'set') {
+                                // Set mode: replace stock
+                                product.stock = newValue;
+                            } else {
+                                // Add mode: add to existing
+                                product.stock = (product.stock || 0) + newValue;
+                            }
+                            
+                            updatedCount++;
                         }
-                        
-                        updatedCount++;
+                    });
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('batchStockModal');
+                    
+                    // Refresh displays
+                    this.renderProducts();
+                    this.renderProductList();
+                    
+                    // Sync to cloud if online
+                    if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                        this.syncToCloud();
                     }
-                });
-                
-                this.saveData();
-                this.closeModal('batchStockModal');
-                
-                // Refresh displays
-                this.renderProducts();
-                this.renderProductList();
-                
-                // Sync to cloud if online
-                if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
-                    this.syncToCloud();
+                    
+                    const modeText = this.batchStockMode === 'set' ? 'diupdate' : 'ditambah';
+                    this.showToast(`${updatedCount} produk stok berhasil ${modeText}!`);
+                } finally {
+                    this.setLoading(false, 'batchStockModal');
+                    this.isSaving = false;
                 }
-                
-                const modeText = this.batchStockMode === 'set' ? 'diupdate' : 'ditambah';
-                this.showToast(`${updatedCount} produk stok berhasil ${modeText}!`);
             },
 
             // ==================== CLOUD SYNC ====================
@@ -3467,7 +3940,7 @@
                         this.data.shift = cloudData.shift;
                     }
                     
-                    this.saveData();
+                    await this.saveDataAsync();
                     
                     // Update all displays
                     this.renderCategories();
@@ -3516,7 +3989,9 @@
                 this.openModal('cloudConfigModal');
             },
 
-            saveCloudConfig() {
+            async saveCloudConfig() {
+                if (this.isSaving) return;
+                
                 console.log('Saving cloud config...');
                 
                 const urlInput = document.getElementById('googleScriptUrl');
@@ -3539,35 +4014,43 @@
                     return;
                 }
                 
-                // Save to localStorage
+                this.setLoading(true, 'cloudConfigModal');
+                this.isSaving = true;
+
                 try {
-                    localStorage.setItem('hifzi_cloud_url', url);
-                    if (sheetId) {
-                        localStorage.setItem('hifzi_sheet_id', sheetId);
+                    // Save to localStorage
+                    try {
+                        localStorage.setItem('hifzi_cloud_url', url);
+                        if (sheetId) {
+                            localStorage.setItem('hifzi_sheet_id', sheetId);
+                        }
+                        console.log('Saved to localStorage successfully');
+                    } catch (e) {
+                        console.error('Error saving to localStorage:', e);
+                        this.showToast('Error menyimpan konfigurasi!');
+                        return;
                     }
-                    console.log('Saved to localStorage successfully');
-                } catch (e) {
-                    console.error('Error saving to localStorage:', e);
-                    this.showToast('Error menyimpan konfigurasi!');
-                    return;
+                    
+                    // Update CONFIG
+                    CONFIG.GOOGLE_SCRIPT_URL = url;
+                    
+                    // Update display
+                    const statusEl = document.getElementById('infoCloudStatus');
+                    if (statusEl) {
+                        statusEl.textContent = 'Terkonfigurasi';
+                    }
+                    
+                    // Test connection
+                    await this.checkCloudConnection();
+                    
+                    this.closeModal('cloudConfigModal');
+                    this.showToast('Konfigurasi cloud disimpan! ☁️');
+                    
+                    console.log('Cloud config saved successfully');
+                } finally {
+                    this.setLoading(false, 'cloudConfigModal');
+                    this.isSaving = false;
                 }
-                
-                // Update CONFIG
-                CONFIG.GOOGLE_SCRIPT_URL = url;
-                
-                // Update display
-                const statusEl = document.getElementById('infoCloudStatus');
-                if (statusEl) {
-                    statusEl.textContent = 'Terkonfigurasi';
-                }
-                
-                // Test connection
-                this.checkCloudConnection();
-                
-                this.closeModal('cloudConfigModal');
-                this.showToast('Konfigurasi cloud disimpan! ☁️');
-                
-                console.log('Cloud config saved successfully');
             },
 
             // ==================== CATEGORY VIEW MODES ====================
@@ -3642,6 +4125,16 @@
                     
                     pillsContainer.appendChild(btn);
                 });
+
+                // FIX #3: Restore scroll position after rendering
+                setTimeout(() => {
+                    pillsContainer.scrollLeft = this.categoryScrollPosition;
+                }, 10);
+
+                // Save scroll position
+                pillsContainer.addEventListener('scroll', () => {
+                    this.categoryScrollPosition = pillsContainer.scrollLeft;
+                }, { passive: true });
             },
 
             renderCategoryList(container) {
@@ -3759,13 +4252,37 @@
             },
 
             // ==================== DATA MANAGEMENT ====================
+            // FIX #1: Async save with loading state to prevent double input
+            async saveDataAsync() {
+                return new Promise((resolve) => {
+                    try {
+                        localStorage.setItem('hifzi_cell_data', JSON.stringify(this.data));
+                        this.updateBackupInfo();
+                        resolve();
+                    } catch (e) {
+                        console.error('Error saving data:', e);
+                        this.showToast('Gagal menyimpan data!');
+                        resolve();
+                    }
+                });
+            },
+
             saveData() {
-                try {
-                    localStorage.setItem('hifzi_cell_data', JSON.stringify(this.data));
-                    this.updateBackupInfo();
-                } catch (e) {
-                    console.error('Error saving data:', e);
-                    this.showToast('Gagal menyimpan data!');
+                this.saveDataAsync();
+            },
+
+            // FIX #1: Loading overlay management
+            setLoading(show, modalId = null) {
+                const overlay = document.getElementById('loadingOverlay');
+                if (show) {
+                    overlay.classList.add('active');
+                    if (modalId) {
+                        const btn = document.querySelector(`#${modalId} .btn-primary, #${modalId} .btn-success, #${modalId} .btn-warning`);
+                        if (btn) btn.classList.add('saving');
+                    }
+                } else {
+                    overlay.classList.remove('active');
+                    document.querySelectorAll('.btn.saving').forEach(btn => btn.classList.remove('saving'));
                 }
             },
 
@@ -3823,7 +4340,7 @@
                 
                 const shiftTransactions = this.data.transactions.filter(t => {
                     const tDate = new Date(t.date);
-                    return tDate >= start && tDate <= end;
+                    return tDate >= start && tDate <= end && t.status !== 'deleted';
                 });
                 
                 return {
@@ -3886,6 +4403,8 @@
                     this.renderProductList();
                 } else if (tab === 'transactions') {
                     this.renderTransactionList();
+                } else if (tab === 'receipt') {
+                    this.initReceiptSection();
                 }
                 
                 const cartBar = document.getElementById('cartBar');
@@ -4128,76 +4647,86 @@
                 this.openModal('importExcelModal');
             },
 
-            confirmExcelImport() {
+            async confirmExcelImport() {
+                if (this.isSaving) return;
+                
                 if (!this.tempImportData || this.tempImportData.products.length === 0) {
                     this.showToast('Tidak ada data untuk diimport!');
                     return;
                 }
                 
-                const products = this.tempImportData.products;
-                const newCategories = this.tempImportData.categories;
-                
-                let createdCategories = 0;
-                newCategories.forEach(catName => {
-                    const exists = this.data.categories.find(c => 
-                        c.name.toLowerCase() === catName.toLowerCase()
-                    );
+                this.setLoading(true, 'importExcelModal');
+                this.isSaving = true;
+
+                try {
+                    const products = this.tempImportData.products;
+                    const newCategories = this.tempImportData.categories;
                     
-                    if (!exists && catName !== 'Semua') {
-                        this.data.categories.push({
-                            id: 'cat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                            name: catName,
-                            icon: '📁'
-                        });
-                        createdCategories++;
-                    }
-                });
-                
-                let imported = 0;
-                let skipped = 0;
-                
-                products.forEach(p => {
-                    const exists = this.data.products.find(prod => 
-                        prod.name.toLowerCase() === p.nama.toLowerCase()
-                    );
-                    
-                    if (!exists) {
-                        const catObj = this.data.categories.find(c => 
-                            c.name.toLowerCase() === p.kategori.toLowerCase()
+                    let createdCategories = 0;
+                    newCategories.forEach(catName => {
+                        const exists = this.data.categories.find(c => 
+                            c.name.toLowerCase() === catName.toLowerCase()
                         );
                         
-                        this.data.products.push({
-                            id: Date.now() + Math.random(),
-                            name: p.nama,
-                            price: p.hargaJual,
-                            cost: p.hargaBeli,
-                            stock: p.stok,
-                            category: catObj ? catObj.id : 'pulsa'
-                        });
-                        imported++;
-                    } else {
-                        skipped++;
+                        if (!exists && catName !== 'Semua') {
+                            this.data.categories.push({
+                                id: 'cat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                name: catName,
+                                icon: '📁'
+                            });
+                            createdCategories++;
+                        }
+                    });
+                    
+                    let imported = 0;
+                    let skipped = 0;
+                    
+                    products.forEach(p => {
+                        const exists = this.data.products.find(prod => 
+                            prod.name.toLowerCase() === p.nama.toLowerCase()
+                        );
+                        
+                        if (!exists) {
+                            const catObj = this.data.categories.find(c => 
+                                c.name.toLowerCase() === p.kategori.toLowerCase()
+                            );
+                            
+                            this.data.products.push({
+                                id: Date.now() + Math.random(),
+                                name: p.nama,
+                                price: p.hargaJual,
+                                cost: p.hargaBeli,
+                                stock: p.stok,
+                                category: catObj ? catObj.id : 'pulsa'
+                            });
+                            imported++;
+                        } else {
+                            skipped++;
+                        }
+                    });
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('importExcelModal');
+                    this.tempImportData = null;
+                    
+                    this.renderCategories();
+                    this.renderProducts();
+                    this.renderProductList();
+                    this.updateBackupInfo();
+                    
+                    if (this.isOnline) {
+                        this.syncToCloud();
                     }
-                });
-                
-                this.saveData();
-                this.closeModal('importExcelModal');
-                this.tempImportData = null;
-                
-                this.renderCategories();
-                this.renderProducts();
-                this.renderProductList();
-                this.updateBackupInfo();
-                
-                if (this.isOnline) {
-                    this.syncToCloud();
+                    
+                    let msg = `Berhasil import ${imported} produk!`;
+                    if (createdCategories > 0) msg += ` (${createdCategories} kategori baru)`;
+                    if (skipped > 0) msg += ` ${skipped} dilewati (sudah ada)`;
+                    
+                    this.showToast(msg);
+                } finally {
+                    this.setLoading(false, 'importExcelModal');
+                    this.isSaving = false;
                 }
-                
-                let msg = `Berhasil import ${imported} produk!`;
-                if (createdCategories > 0) msg += ` (${createdCategories} kategori baru)`;
-                if (skipped > 0) msg += ` ${skipped} dilewati (sudah ada)`;
-                
-                this.showToast(msg);
             },
 
             openImportModal() {
@@ -4327,7 +4856,9 @@
                 this.openModal('productModal');
             },
 
-            saveProduct() {
+            async saveProduct() {
+                if (this.isSaving) return;
+                
                 const name = document.getElementById('productName').value.trim();
                 const price = parseInt(document.getElementById('productPrice').value) || 0;
                 const cost = parseInt(document.getElementById('productCost').value) || 0;
@@ -4339,33 +4870,41 @@
                     return;
                 }
                 
-                if (this.editingProduct) {
-                    this.editingProduct.name = name;
-                    this.editingProduct.price = price;
-                    this.editingProduct.cost = cost;
-                    this.editingProduct.stock = stock;
-                    this.editingProduct.category = category;
-                } else {
-                    this.data.products.push({
-                        id: Date.now(),
-                        name,
-                        price,
-                        cost,
-                        stock,
-                        category
-                    });
+                this.setLoading(true, 'productModal');
+                this.isSaving = true;
+
+                try {
+                    if (this.editingProduct) {
+                        this.editingProduct.name = name;
+                        this.editingProduct.price = price;
+                        this.editingProduct.cost = cost;
+                        this.editingProduct.stock = stock;
+                        this.editingProduct.category = category;
+                    } else {
+                        this.data.products.push({
+                            id: Date.now(),
+                            name,
+                            price,
+                            cost,
+                            stock,
+                            category
+                        });
+                    }
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('productModal');
+                    this.renderProducts();
+                    this.renderProductList();
+                    
+                    if (this.isOnline) {
+                        this.syncToCloud();
+                    }
+                    
+                    this.showToast('Produk disimpan!');
+                } finally {
+                    this.setLoading(false, 'productModal');
+                    this.isSaving = false;
                 }
-                
-                this.saveData();
-                this.closeModal('productModal');
-                this.renderProducts();
-                this.renderProductList();
-                
-                if (this.isOnline) {
-                    this.syncToCloud();
-                }
-                
-                this.showToast('Produk disimpan!');
             },
 
             renderProductList() {
@@ -4514,8 +5053,8 @@
                 document.getElementById('cashReceived').value = '';
                 document.getElementById('changeGroup').style.display = 'none';
                 
-                // Reset print checkbox to checked by default
-                document.getElementById('autoPrint').checked = true;
+                // FIX #5: Print checkbox tidak otomatis tercentang
+                document.getElementById('autoPrint').checked = false;
                 
                 this.openModal('checkoutModal');
             },
@@ -4547,8 +5086,10 @@
                 }
             },
 
-            // MODIFIED: Optional print instead of auto print
+            // FIX #5: Optional print - checkbox tidak otomatis tercentang
             async processPayment() {
+                if (this.isSaving) return;
+                
                 const total = this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
                 const received = parseInt(document.getElementById('cashReceived').value) || 0;
                 const method = document.getElementById('paymentMethod').value;
@@ -4559,59 +5100,67 @@
                     return;
                 }
                 
-                const transaction = {
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    items: [...this.cart],
-                    total: total,
-                    profit: this.cart.reduce((sum, item) => sum + ((item.price - item.cost) * item.qty), 0),
-                    paymentMethod: method,
-                    received: method === 'cash' ? received : total,
-                    change: method === 'cash' ? received - total : 0,
-                    status: 'completed',
-                    transactionNumber: 'TRX-' + Date.now().toString().slice(-8)
-                };
-                
-                this.data.transactions.push(transaction);
-                
-                this.cart.forEach(item => {
-                    const product = this.data.products.find(p => p.id === item.id);
-                    if (product) product.stock -= item.qty;
-                });
-                
-                this.data.settings.currentCash += total;
-                
-                this.saveData();
-                
-                // Sync to cloud
-                if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
-                    try {
-                        await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                action: 'addTransaction',
-                                transaction: transaction,
-                                settings: this.data.settings // Sync kas update
-                            })
-                        });
-                    } catch (e) {
-                        console.error('Failed to sync transaction:', e);
+                this.setLoading(true, 'checkoutModal');
+                this.isSaving = true;
+
+                try {
+                    const transaction = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        items: [...this.cart],
+                        total: total,
+                        profit: this.cart.reduce((sum, item) => sum + ((item.price - item.cost) * item.qty), 0),
+                        paymentMethod: method,
+                        received: method === 'cash' ? received : total,
+                        change: method === 'cash' ? received - total : 0,
+                        status: 'completed',
+                        transactionNumber: 'TRX-' + Date.now().toString().slice(-8)
+                    };
+                    
+                    this.data.transactions.push(transaction);
+                    
+                    this.cart.forEach(item => {
+                        const product = this.data.products.find(p => p.id === item.id);
+                        if (product) product.stock -= item.qty;
+                    });
+                    
+                    this.data.settings.currentCash += total;
+                    
+                    await this.saveDataAsync();
+                    
+                    // Sync to cloud
+                    if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                        try {
+                            await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    action: 'addTransaction',
+                                    transaction: transaction,
+                                    settings: this.data.settings // Sync kas update
+                                })
+                            });
+                        } catch (e) {
+                            console.error('Failed to sync transaction:', e);
+                        }
                     }
+                    
+                    // Only print if checkbox is checked
+                    if (shouldPrint) {
+                        this.printReceipt(transaction);
+                    }
+                    
+                    this.cart = [];
+                    this.updateCart();
+                    this.renderProducts();
+                    this.closeModal('checkoutModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    
+                    this.showToast('Pembayaran berhasil! 🎉');
+                } finally {
+                    this.setLoading(false, 'checkoutModal');
+                    this.isSaving = false;
                 }
-                
-                // Only print if checkbox is checked
-                if (shouldPrint) {
-                    this.printReceipt(transaction);
-                }
-                
-                this.cart = [];
-                this.updateCart();
-                this.renderProducts();
-                this.closeModal('checkoutModal');
-                this.updateCashDisplay();
-                this.updateStats();
-                
-                this.showToast('Pembayaran berhasil! 🎉');
             },
 
             printReceipt(transaction) {
@@ -4676,7 +5225,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('cashModal');
             },
 
-            saveCashTransaction() {
+            async saveCashTransaction() {
+                if (this.isSaving) return;
+                
                 const type = document.getElementById('cashModal').dataset.type;
                 const amount = parseInt(document.getElementById('cashAmount').value) || 0;
                 const category = document.getElementById('cashCategory').value;
@@ -4692,29 +5243,37 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                const transaction = {
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    type: type,
-                    amount: amount,
-                    category: category,
-                    note: note
-                };
-                
-                this.data.cashTransactions.push(transaction);
-                
-                if (type === 'in') {
-                    this.data.settings.currentCash += amount;
-                } else {
-                    this.data.settings.currentCash -= amount;
+                this.setLoading(true, 'cashModal');
+                this.isSaving = true;
+
+                try {
+                    const transaction = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        type: type,
+                        amount: amount,
+                        category: category,
+                        note: note
+                    };
+                    
+                    this.data.cashTransactions.push(transaction);
+                    
+                    if (type === 'in') {
+                        this.data.settings.currentCash += amount;
+                    } else {
+                        this.data.settings.currentCash -= amount;
+                    }
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('cashModal');
+                    this.updateCashDisplay();
+                    this.updateCashStats();
+                    this.renderCashTransactions();
+                    this.showToast('Transaksi kas tersimpan!');
+                } finally {
+                    this.setLoading(false, 'cashModal');
+                    this.isSaving = false;
                 }
-                
-                this.saveData();
-                this.closeModal('cashModal');
-                this.updateCashDisplay();
-                this.updateCashStats();
-                this.renderCashTransactions();
-                this.showToast('Transaksi kas tersimpan!');
             },
 
             // Simplified Top Up - No Admin
@@ -4725,7 +5284,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('topUpModal');
             },
 
-            prosesTopUp() {
+            async prosesTopUp() {
+                if (this.isSaving) return;
+                
                 const type = document.getElementById('topUpType').value;
                 const nominal = parseInt(document.getElementById('topUpNominal').value) || 0;
                 const target = document.getElementById('topUpTarget').value;
@@ -4736,30 +5297,38 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                this.data.settings.currentCash += nominal;
-                
-                this.data.cashTransactions.push({
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    type: 'topup',
-                    amount: nominal,
-                    category: 'topup_' + type,
-                    note: `Top Up ${type.toUpperCase()}${target ? ' - ' + target : ''}${note ? ' (' + note + ')' : ''}`
-                });
-                
-                this.saveData();
-                this.closeModal('topUpModal');
-                this.updateCashDisplay();
-                this.updateCashStats();
-                this.renderCashTransactions();
-                
-                this.showToast(`Top up berhasil! Rp ${this.formatNumber(nominal)} masuk ke laci.`);
-                
-                setTimeout(() => {
-                    if (confirm('Catat biaya admin sebagai pendapatan di Kasir?')) {
-                        this.openAdminFeeModal('topup', type);
-                    }
-                }, 500);
+                this.setLoading(true, 'topUpModal');
+                this.isSaving = true;
+
+                try {
+                    this.data.settings.currentCash += nominal;
+                    
+                    this.data.cashTransactions.push({
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        type: 'topup',
+                        amount: nominal,
+                        category: 'topup_' + type,
+                        note: `Top Up ${type.toUpperCase()}${target ? ' - ' + target : ''}${note ? ' (' + note + ')' : ''}`
+                    });
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('topUpModal');
+                    this.updateCashDisplay();
+                    this.updateCashStats();
+                    this.renderCashTransactions();
+                    
+                    this.showToast(`Top up berhasil! Rp ${this.formatNumber(nominal)} masuk ke laci.`);
+                    
+                    setTimeout(() => {
+                        if (confirm('Catat biaya admin sebagai pendapatan di Kasir?')) {
+                            this.openAdminFeeModal('topup', type);
+                        }
+                    }, 500);
+                } finally {
+                    this.setLoading(false, 'topUpModal');
+                    this.isSaving = false;
+                }
             },
 
             // Simplified Tarik Tunai - No Admin
@@ -4769,7 +5338,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('tarikTunaiModal');
             },
 
-            prosesTarikTunai() {
+            async prosesTarikTunai() {
+                if (this.isSaving) return;
+                
                 const nominal = parseInt(document.getElementById('tarikNominal').value) || 0;
                 const note = document.getElementById('tarikNote').value || 'Tarik Tunai';
                 
@@ -4783,30 +5354,38 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                this.data.settings.currentCash -= nominal;
-                
-                this.data.cashTransactions.push({
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    type: 'out',
-                    amount: nominal,
-                    category: 'tarik_tunai',
-                    note: note
-                });
-                
-                this.saveData();
-                this.closeModal('tarikTunaiModal');
-                this.updateCashDisplay();
-                this.updateCashStats();
-                this.renderCashTransactions();
-                
-                this.showToast(`Tarik tunai berhasil! Rp ${this.formatNumber(nominal)} keluar dari laci.`);
-                
-                setTimeout(() => {
-                    if (confirm('Catat biaya admin sebagai pendapatan di Kasir?')) {
-                        this.openAdminFeeModal('tarik');
-                    }
-                }, 500);
+                this.setLoading(true, 'tarikTunaiModal');
+                this.isSaving = true;
+
+                try {
+                    this.data.settings.currentCash -= nominal;
+                    
+                    this.data.cashTransactions.push({
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        type: 'out',
+                        amount: nominal,
+                        category: 'tarik_tunai',
+                        note: note
+                    });
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('tarikTunaiModal');
+                    this.updateCashDisplay();
+                    this.updateCashStats();
+                    this.renderCashTransactions();
+                    
+                    this.showToast(`Tarik tunai berhasil! Rp ${this.formatNumber(nominal)} keluar dari laci.`);
+                    
+                    setTimeout(() => {
+                        if (confirm('Catat biaya admin sebagai pendapatan di Kasir?')) {
+                            this.openAdminFeeModal('tarik');
+                        }
+                    }, 500);
+                } finally {
+                    this.setLoading(false, 'tarikTunaiModal');
+                    this.isSaving = false;
+                }
             },
 
             // Admin Fee Modal (New)
@@ -4817,7 +5396,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('adminFeeModal');
             },
 
-            saveAdminFee() {
+            async saveAdminFee() {
+                if (this.isSaving) return;
+                
                 const type = document.getElementById('adminFeeType').value;
                 const amount = parseInt(document.getElementById('adminFeeAmount').value) || 0;
                 const note = document.getElementById('adminFeeNote').value;
@@ -4827,30 +5408,38 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                const adminTransaction = {
-                    id: Date.now(),
-                    date: new Date().toISOString(),
-                    items: [{
-                        name: note || (type === 'topup_admin' ? 'Fee Admin Top Up' : 'Fee Admin Tarik Tunai'),
-                        price: amount,
-                        cost: 0,
-                        qty: 1
-                    }],
-                    total: amount,
-                    profit: amount,
-                    paymentMethod: 'cash',
-                    type: 'admin_fee'
-                };
-                
-                this.data.transactions.push(adminTransaction);
-                this.data.settings.currentCash += amount;
-                
-                this.saveData();
-                this.closeModal('adminFeeModal');
-                this.updateCashDisplay();
-                this.updateStats();
-                
-                this.showToast(`Admin fee Rp ${this.formatNumber(amount)} tercatat sebagai pendapatan!`);
+                this.setLoading(true, 'adminFeeModal');
+                this.isSaving = true;
+
+                try {
+                    const adminTransaction = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        items: [{
+                            name: note || (type === 'topup_admin' ? 'Fee Admin Top Up' : 'Fee Admin Tarik Tunai'),
+                            price: amount,
+                            cost: 0,
+                            qty: 1
+                        }],
+                        total: amount,
+                        profit: amount,
+                        paymentMethod: 'cash',
+                        type: 'admin_fee'
+                    };
+                    
+                    this.data.transactions.push(adminTransaction);
+                    this.data.settings.currentCash += amount;
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('adminFeeModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    
+                    this.showToast(`Admin fee Rp ${this.formatNumber(amount)} tercatat sebagai pendapatan!`);
+                } finally {
+                    this.setLoading(false, 'adminFeeModal');
+                    this.isSaving = false;
+                }
             },
 
             openCashHistory() {
@@ -5027,9 +5616,10 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         break;
                 }
                 
+                // FIX #2: Exclude deleted transactions from reports
                 const filtered = this.data.transactions.filter(t => {
                     const tDate = new Date(t.date);
-                    return tDate >= startDate && tDate <= endDate;
+                    return tDate >= startDate && tDate <= endDate && t.status !== 'deleted';
                 });
                 
                 const totalSales = filtered.reduce((sum, t) => sum + t.total, 0);
@@ -5117,6 +5707,11 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     filtered = filtered.filter(t => new Date(t.date).toDateString() === today);
                 } else if (this.transactionFilter === 'voided') {
                     filtered = filtered.filter(t => t.status === 'voided');
+                } else if (this.transactionFilter === 'deleted') {
+                    filtered = filtered.filter(t => t.status === 'deleted');
+                } else {
+                    // Default: show all except deleted unless specifically filtered
+                    filtered = filtered.filter(t => t.status !== 'deleted');
                 }
                 
                 if (search) {
@@ -5144,40 +5739,58 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 
                 filtered.forEach(t => {
                     const item = document.createElement('div');
-                    item.className = `transaction-item ${t.status === 'voided' ? 'voided' : ''}`;
+                    item.className = `transaction-item ${t.status === 'voided' ? 'voided' : ''} ${t.status === 'deleted' ? 'deleted' : ''}`;
                     
                     const isVoided = t.status === 'voided';
+                    const isDeleted = t.status === 'deleted';
                     const itemNames = t.items.map(i => i.name).join(', ');
                     const shortNames = itemNames.length > 30 ? itemNames.substring(0, 30) + '...' : itemNames;
+                    
+                    let actionsHtml = '';
+                    if (!isVoided && !isDeleted) {
+                        actionsHtml = `
+                            <div class="transaction-actions">
+                                <button class="action-btn print" onclick="event.stopPropagation(); app.reprintTransaction(${t.id})">🖨️ Cetak</button>
+                                <button class="action-btn edit" onclick="event.stopPropagation(); app.openEditTransaction(${t.id})">✏️ Edit</button>
+                                <button class="action-btn refund" onclick="event.stopPropagation(); app.openRefundModal(${t.id})">↩️ Retur</button>
+                                <button class="action-btn void" onclick="event.stopPropagation(); app.openVoidModal(${t.id})">🗑️ Batal</button>
+                                <button class="action-btn delete" onclick="event.stopPropagation(); app.openDeleteModal(${t.id})">❌ Hapus</button>
+                            </div>
+                        `;
+                    } else if (isDeleted) {
+                        actionsHtml = `
+                            <div class="transaction-actions">
+                                <button class="action-btn print" onclick="event.stopPropagation(); app.viewDeleteDetail(${t.id})">👁️ Detail</button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div class="transaction-actions">
+                                <button class="action-btn print" onclick="event.stopPropagation(); app.viewVoidDetail(${t.id})">👁️ Detail</button>
+                            </div>
+                        `;
+                    }
                     
                     item.innerHTML = `
                         <div class="transaction-info" style="flex: 1; min-width: 0;">
                             <div class="transaction-title">
                                 ${t.transactionNumber || 'TRX-' + t.id.toString().slice(-8)}
                                 ${isVoided ? '<span style="color: var(--danger); font-size: 10px; margin-left: 5px;">[DIBATALKAN]</span>' : ''}
+                                ${isDeleted ? '<span style="color: #666; font-size: 10px; margin-left: 5px;">[DIHAPUS]</span>' : ''}
                             </div>
                             <div class="transaction-meta">
                                 ${new Date(t.date).toLocaleString('id-ID')} • ${shortNames}
                             </div>
-                            ${!isVoided ? `
-                            <div class="transaction-actions">
-                                <button class="action-btn print" onclick="event.stopPropagation(); app.reprintTransaction(${t.id})">🖨️ Cetak</button>
-                                <button class="action-btn edit" onclick="event.stopPropagation(); app.openEditTransaction(${t.id})">✏️ Edit</button>
-                                <button class="action-btn refund" onclick="event.stopPropagation(); app.openRefundModal(${t.id})">↩️ Retur</button>
-                                <button class="action-btn void" onclick="event.stopPropagation(); app.openVoidModal(${t.id})">🗑️ Batal</button>
-                            </div>
-                            ` : `
-                            <div class="transaction-actions">
-                                <button class="action-btn print" onclick="event.stopPropagation(); app.viewVoidDetail(${t.id})">👁️ Detail</button>
-                            </div>
-                            `}
+                            ${actionsHtml}
                         </div>
                         <div class="transaction-amount income" style="margin-left: 10px;">
                             Rp ${this.formatNumber(t.total)}
                         </div>
                     `;
                     
-                    item.addEventListener('click', () => this.viewTransactionDetail(t.id));
+                    if (!isVoided && !isDeleted) {
+                        item.addEventListener('click', () => this.viewTransactionDetail(t.id));
+                    }
                     
                     container.appendChild(item);
                 });
@@ -5190,6 +5803,7 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.currentTransaction = t;
                 
                 const isVoided = t.status === 'voided';
+                const isDeleted = t.status === 'deleted';
                 const content = document.getElementById('transactionDetailContent');
                 
                 content.innerHTML = `
@@ -5202,6 +5816,7 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             <span>${new Date(t.date).toLocaleString('id-ID')}</span>
                         </div>
                         ${isVoided ? '<div class="void-badge">DIBATALKAN</div>' : ''}
+                        ${isDeleted ? '<div class="void-badge" style="background: #666;">DIHAPUS</div>' : ''}
                     </div>
                     
                     ${isVoided && t.voidInfo ? `
@@ -5211,6 +5826,17 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             <b>${t.voidInfo.reason}</b><br>
                             ${t.voidInfo.note || '-'}<br>
                             <small>Oleh: ${t.voidInfo.voidBy} • ${new Date(t.voidInfo.voidDate).toLocaleString('id-ID')}</small>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${isDeleted && t.deleteInfo ? `
+                    <div class="void-reason-box" style="background: #f5f5f5; border-left-color: #666; margin-bottom: 15px;">
+                        <div class="void-reason-title" style="color: #666;">Alasan Penghapusan:</div>
+                        <div style="font-size: 13px; color: #666;">
+                            <b>${t.deleteInfo.reason}</b><br>
+                            ${t.deleteInfo.note || '-'}<br>
+                            <small>Oleh: ${t.deleteInfo.deletedBy} • ${new Date(t.deleteInfo.deleteDate).toLocaleString('id-ID')}</small>
                         </div>
                     </div>
                     ` : ''}
@@ -5257,7 +5883,7 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         </div>
                     </div>
                     
-                    ${!isVoided ? `
+                    ${!isVoided && !isDeleted ? `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
                         <button class="btn btn-secondary" onclick="app.closeModal('transactionDetailModal')">Tutup</button>
                         <button class="btn btn-primary" onclick="app.reprintTransaction(${t.id})">🖨️ Cetak Ulang</button>
@@ -5266,6 +5892,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         <button class="btn btn-info" onclick="app.openEditTransaction(${t.id})" style="font-size: 14px;">✏️ Edit</button>
                         <button class="btn btn-warning" onclick="app.openRefundModal(${t.id})" style="font-size: 14px;">↩️ Retur</button>
                         <button class="btn btn-danger" onclick="app.openVoidModal(${t.id})" style="font-size: 14px;">🗑️ Batal</button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-danger" onclick="app.openDeleteModal(${t.id})" style="width: 100%; background: #666;">❌ Hapus Permanen</button>
                     </div>
                     ` : `
                     <div style="margin-top: 20px;">
@@ -5289,8 +5918,8 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 const t = this.data.transactions.find(tr => tr.id === transactionId);
                 if (!t) return;
                 
-                if (t.status === 'voided') {
-                    this.showToast('Transaksi yang sudah dibatalkan tidak bisa diedit!');
+                if (t.status === 'voided' || t.status === 'deleted') {
+                    this.showToast('Transaksi yang sudah dibatalkan/dihapus tidak bisa diedit!');
                     return;
                 }
                 
@@ -5387,7 +6016,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 document.getElementById('editNewTotal').textContent = 'Rp ' + this.formatNumber(newTotal);
             },
 
-            saveEditTransaction() {
+            async saveEditTransaction() {
+                if (this.isSaving) return;
+                
                 if (!this.editingTransaction) return;
                 
                 const reason = document.getElementById('editReason').value;
@@ -5398,64 +6029,72 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                const oldItems = [...this.editingTransaction.items];
-                this.editingTransaction.items = this.editingTransaction.items.filter(i => i.qty > 0);
-                
-                if (this.editingTransaction.items.length === 0) {
-                    this.showToast('Transaksi harus memiliki minimal 1 item!');
-                    this.editingTransaction.items = oldItems;
-                    return;
-                }
-                
-                const stockChanges = {};
-                
-                oldItems.forEach(oldItem => {
-                    stockChanges[oldItem.id] = (stockChanges[oldItem.id] || 0) + oldItem.qty;
-                });
-                
-                this.editingTransaction.items.forEach(newItem => {
-                    stockChanges[newItem.id] = (stockChanges[newItem.id] || 0) - newItem.qty;
-                });
-                
-                Object.keys(stockChanges).forEach(productId => {
-                    const product = this.data.products.find(p => p.id == productId);
-                    if (product) {
-                        product.stock += stockChanges[productId];
+                this.setLoading(true, 'editTransactionModal');
+                this.isSaving = true;
+
+                try {
+                    const oldItems = [...this.editingTransaction.items];
+                    this.editingTransaction.items = this.editingTransaction.items.filter(i => i.qty > 0);
+                    
+                    if (this.editingTransaction.items.length === 0) {
+                        this.showToast('Transaksi harus memiliki minimal 1 item!');
+                        this.editingTransaction.items = oldItems;
+                        return;
                     }
-                });
-                
-                const oldTotal = this.editingTransaction.total;
-                this.editingTransaction.total = this.editingTransaction.items.reduce((sum, i) => sum + (i.qty * i.price), 0);
-                this.editingTransaction.profit = this.editingTransaction.items.reduce((sum, i) => sum + ((i.price - i.cost) * i.qty), 0);
-                
-                const diff = this.editingTransaction.total - oldTotal;
-                if (diff !== 0) {
-                    this.data.settings.currentCash += diff;
+                    
+                    const stockChanges = {};
+                    
+                    oldItems.forEach(oldItem => {
+                        stockChanges[oldItem.id] = (stockChanges[oldItem.id] || 0) + oldItem.qty;
+                    });
+                    
+                    this.editingTransaction.items.forEach(newItem => {
+                        stockChanges[newItem.id] = (stockChanges[newItem.id] || 0) - newItem.qty;
+                    });
+                    
+                    Object.keys(stockChanges).forEach(productId => {
+                        const product = this.data.products.find(p => p.id == productId);
+                        if (product) {
+                            product.stock += stockChanges[productId];
+                        }
+                    });
+                    
+                    const oldTotal = this.editingTransaction.total;
+                    this.editingTransaction.total = this.editingTransaction.items.reduce((sum, i) => sum + (i.qty * i.price), 0);
+                    this.editingTransaction.profit = this.editingTransaction.items.reduce((sum, i) => sum + ((i.price - i.cost) * i.qty), 0);
+                    
+                    const diff = this.editingTransaction.total - oldTotal;
+                    if (diff !== 0) {
+                        this.data.settings.currentCash += diff;
+                    }
+                    
+                    if (!this.editingTransaction.editHistory) {
+                        this.editingTransaction.editHistory = [];
+                    }
+                    
+                    this.editingTransaction.editHistory.push({
+                        date: new Date().toISOString(),
+                        reason: reason,
+                        note: note,
+                        oldTotal: oldTotal,
+                        newTotal: this.editingTransaction.total,
+                        changedBy: 'Kasir'
+                    });
+                    
+                    this.editingTransaction.lastEdited = new Date().toISOString();
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('editTransactionModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    this.renderTransactionList();
+                    
+                    this.showToast('Transaksi berhasil diupdate!');
+                    this.editingTransaction = null;
+                } finally {
+                    this.setLoading(false, 'editTransactionModal');
+                    this.isSaving = false;
                 }
-                
-                if (!this.editingTransaction.editHistory) {
-                    this.editingTransaction.editHistory = [];
-                }
-                
-                this.editingTransaction.editHistory.push({
-                    date: new Date().toISOString(),
-                    reason: reason,
-                    note: note,
-                    oldTotal: oldTotal,
-                    newTotal: this.editingTransaction.total,
-                    changedBy: 'Kasir'
-                });
-                
-                this.editingTransaction.lastEdited = new Date().toISOString();
-                
-                this.saveData();
-                this.closeModal('editTransactionModal');
-                this.updateCashDisplay();
-                this.updateStats();
-                this.renderTransactionList();
-                
-                this.showToast('Transaksi berhasil diupdate!');
-                this.editingTransaction = null;
             },
 
             openVoidModal(transactionId) {
@@ -5477,7 +6116,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('voidTransactionModal');
             },
 
-            confirmVoidTransaction() {
+            async confirmVoidTransaction() {
+                if (this.isSaving) return;
+                
                 if (!this.currentTransaction) return;
                 
                 const reason = document.getElementById('voidReason').value;
@@ -5494,34 +6135,126 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     return;
                 }
                 
-                this.currentTransaction.items.forEach(item => {
-                    const product = this.data.products.find(p => p.id === item.id);
-                    if (product) {
-                        product.stock += item.qty;
-                    }
-                });
-                
-                this.data.settings.currentCash -= this.currentTransaction.total;
-                
-                this.currentTransaction.status = 'voided';
-                this.currentTransaction.voidInfo = {
-                    reason: reason,
-                    note: note,
-                    voidDate: new Date().toISOString(),
-                    voidBy: 'Kasir'
-                };
-                
-                this.saveData();
-                this.closeModal('voidTransactionModal');
-                this.updateCashDisplay();
-                this.updateStats();
-                this.renderTransactionList();
-                
-                this.showToast('Transaksi berhasil dibatalkan! Stok dikembalikan.');
-                this.currentTransaction = null;
+                this.setLoading(true, 'voidTransactionModal');
+                this.isSaving = true;
+
+                try {
+                    this.currentTransaction.items.forEach(item => {
+                        const product = this.data.products.find(p => p.id === item.id);
+                        if (product) {
+                            product.stock += item.qty;
+                        }
+                    });
+                    
+                    this.data.settings.currentCash -= this.currentTransaction.total;
+                    
+                    this.currentTransaction.status = 'voided';
+                    this.currentTransaction.voidInfo = {
+                        reason: reason,
+                        note: note,
+                        voidDate: new Date().toISOString(),
+                        voidBy: 'Kasir'
+                    };
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('voidTransactionModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    this.renderTransactionList();
+                    
+                    this.showToast('Transaksi berhasil dibatalkan! Stok dikembalikan.');
+                    this.currentTransaction = null;
+                } finally {
+                    this.setLoading(false, 'voidTransactionModal');
+                    this.isSaving = false;
+                }
             },
 
             viewVoidDetail(transactionId) {
+                this.viewTransactionDetail(transactionId);
+            },
+
+            // FIX #2: New permanent delete feature
+            openDeleteModal(transactionId) {
+                const t = this.data.transactions.find(tr => tr.id === transactionId);
+                if (!t) return;
+                
+                if (t.status === 'deleted') {
+                    this.showToast('Transaksi sudah dihapus sebelumnya!');
+                    return;
+                }
+                
+                this.currentTransaction = t;
+                
+                document.getElementById('deleteReason').value = 'data_salah';
+                document.getElementById('deleteNote').value = '';
+                document.getElementById('deletePassword').value = '';
+                
+                this.closeModal('transactionDetailModal');
+                this.openModal('deleteTransactionModal');
+            },
+
+            async confirmDeleteTransaction() {
+                if (this.isSaving) return;
+                
+                if (!this.currentTransaction) return;
+                
+                const reason = document.getElementById('deleteReason').value;
+                const note = document.getElementById('deleteNote').value;
+                const password = document.getElementById('deletePassword').value;
+                
+                if (!reason) {
+                    this.showToast('Alasan penghapusan wajib diisi!');
+                    return;
+                }
+                
+                if (password !== 'admin') {
+                    this.showToast('Password salah! (default: admin)');
+                    return;
+                }
+                
+                this.setLoading(true, 'deleteTransactionModal');
+                this.isSaving = true;
+
+                try {
+                    // If transaction was not voided, return stock and adjust cash
+                    if (this.currentTransaction.status !== 'voided') {
+                        this.currentTransaction.items.forEach(item => {
+                            const product = this.data.products.find(p => p.id === item.id);
+                            if (product) {
+                                product.stock += item.qty;
+                            }
+                        });
+                        
+                        // Subtract from cash (remove the transaction from totals)
+                        this.data.settings.currentCash -= this.currentTransaction.total;
+                    }
+                    
+                    // Mark as deleted permanently
+                    this.currentTransaction.status = 'deleted';
+                    this.currentTransaction.deleteInfo = {
+                        reason: reason,
+                        note: note,
+                        deleteDate: new Date().toISOString(),
+                        deletedBy: 'Kasir',
+                        originalStatus: this.currentTransaction.status === 'deleted' ? 'completed' : this.currentTransaction.status
+                    };
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('deleteTransactionModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    this.renderTransactionList();
+                    
+                    this.showToast('Transaksi dihapus permanen! Total transaksi dan kas telah disesuaikan.');
+                    this.currentTransaction = null;
+                } finally {
+                    this.setLoading(false, 'deleteTransactionModal');
+                    this.isSaving = false;
+                }
+            },
+
+            viewDeleteDetail(transactionId) {
                 this.viewTransactionDetail(transactionId);
             },
 
@@ -5529,8 +6262,8 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 const t = this.data.transactions.find(tr => tr.id === transactionId);
                 if (!t) return;
                 
-                if (t.status === 'voided') {
-                    this.showToast('Transaksi yang sudah dibatalkan tidak bisa diretur!');
+                if (t.status === 'voided' || t.status === 'deleted') {
+                    this.showToast('Transaksi yang sudah dibatalkan/dihapus tidak bisa diretur!');
                     return;
                 }
                 
@@ -5607,7 +6340,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 document.getElementById('refundTotalAmount').textContent = 'Rp ' + this.formatNumber(total);
             },
 
-            processRefund() {
+            async processRefund() {
+                if (this.isSaving) return;
+                
                 if (!this.refundTransaction) return;
                 
                 const itemsToRefund = this.refundTransaction.refundItems.filter(i => i.refundQty > 0);
@@ -5620,51 +6355,650 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 const reason = document.getElementById('refundReason').value;
                 const note = document.getElementById('refundNote').value;
                 
-                const refundTotal = itemsToRefund.reduce((sum, i) => sum + (i.refundQty * i.price), 0);
-                const refundProfit = itemsToRefund.reduce((sum, i) => sum + (i.refundQty * (i.price - i.cost)), 0);
-                
-                itemsToRefund.forEach(item => {
-                    const product = this.data.products.find(p => p.id === item.id);
-                    if (product) {
-                        product.stock += item.refundQty;
+                this.setLoading(true, 'refundModal');
+                this.isSaving = true;
+
+                try {
+                    const refundTotal = itemsToRefund.reduce((sum, i) => sum + (i.refundQty * i.price), 0);
+                    const refundProfit = itemsToRefund.reduce((sum, i) => sum + (i.refundQty * (i.price - i.cost)), 0);
+                    
+                    itemsToRefund.forEach(item => {
+                        const product = this.data.products.find(p => p.id === item.id);
+                        if (product) {
+                            product.stock += item.refundQty;
+                        }
+                    });
+                    
+                    this.data.settings.currentCash -= refundTotal;
+                    
+                    if (!this.refundTransaction.refunds) {
+                        this.refundTransaction.refunds = [];
                     }
-                });
+                    
+                    this.refundTransaction.refunds.push({
+                        date: new Date().toISOString(),
+                        items: itemsToRefund.map(i => ({...i})),
+                        total: refundTotal,
+                        profit: refundProfit,
+                        reason: reason,
+                        note: note
+                    });
+                    
+                    this.refundTransaction.total -= refundTotal;
+                    this.refundTransaction.profit -= refundProfit;
+                    
+                    itemsToRefund.forEach(refundItem => {
+                        const transItem = this.refundTransaction.items.find(i => i.id === refundItem.id);
+                        if (transItem) {
+                            transItem.qty -= refundItem.refundQty;
+                        }
+                    });
+                    
+                    this.refundTransaction.items = this.refundTransaction.items.filter(i => i.qty > 0);
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('refundModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    this.renderTransactionList();
+                    
+                    this.showToast(`Retur berhasil! Rp ${this.formatNumber(refundTotal)} dikembalikan.`);
+                    this.refundTransaction = null;
+                } finally {
+                    this.setLoading(false, 'refundModal');
+                    this.isSaving = false;
+                }
+            },
+
+            // ==================== NEW: OCR RECEIPT FEATURE ====================
+            initReceiptSection() {
+                this.ocrData = null;
+                document.getElementById('ocrFileInput').value = '';
+                document.getElementById('ocrPreviewContainer').style.display = 'none';
+                document.getElementById('ocrResultBox').style.display = 'none';
+                document.getElementById('btnProcessOCR').style.display = 'none';
+                document.getElementById('ocrUploadArea').style.display = 'block';
+            },
+
+            setReceiptType(type) {
+                this.receiptType = type;
+                document.querySelectorAll('.receipt-type-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('receipt' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+            },
+
+            handleOCRUpload(input) {
+                const file = input.files[0];
+                if (file) {
+                    this.handleOCRFile(file);
+                }
+            },
+
+            handleOCRFile(file) {
+                if (!file.type.startsWith('image/')) {
+                    this.showToast('File harus berupa gambar!');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById('ocrPreview');
+                    img.src = e.target.result;
+                    document.getElementById('ocrPreviewContainer').style.display = 'block';
+                    document.getElementById('ocrUploadArea').style.display = 'none';
+                    
+                    // Start OCR processing
+                    this.processOCR(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            },
+
+            async processOCR(imageData) {
+                const progressBar = document.getElementById('ocrProgressBar');
+                const progressContainer = document.getElementById('ocrProgress');
+                const status = document.getElementById('ocrStatus');
                 
-                this.data.settings.currentCash -= refundTotal;
+                progressContainer.style.display = 'block';
+                status.style.display = 'block';
+                status.className = 'ocr-status processing';
+                status.textContent = 'Memproses gambar...';
                 
-                if (!this.refundTransaction.refunds) {
-                    this.refundTransaction.refunds = [];
+                try {
+                    const result = await Tesseract.recognize(
+                        imageData,
+                        'ind+eng', // Indonesian and English
+                        {
+                            logger: (m) => {
+                                if (m.status === 'recognizing text') {
+                                    progressBar.style.width = (m.progress * 100) + '%';
+                                }
+                            }
+                        }
+                    );
+                    
+                    const text = result.data.text;
+                    console.log('OCR Result:', text);
+                    
+                    // Parse the OCR text based on receipt type
+                    this.ocrData = this.parseReceiptText(text);
+                    
+                    // Display results
+                    this.displayOCRResults(this.ocrData);
+                    
+                    status.className = 'ocr-status success';
+                    status.textContent = 'Berhasil membaca!';
+                    document.getElementById('btnProcessOCR').style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('OCR Error:', error);
+                    status.className = 'ocr-status error';
+                    status.textContent = 'Gagal membaca gambar. Coba input manual.';
+                    this.showToast('OCR gagal. Silakan input data manual.');
+                }
+            },
+
+            parseReceiptText(text) {
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                const data = {
+                    type: this.receiptType,
+                    bank: '',
+                    sender: '',
+                    receiver: '',
+                    senderAccount: '',
+                    receiverAccount: '',
+                    nominal: 0,
+                    admin: 0,
+                    total: 0,
+                    reference: '',
+                    date: '',
+                    time: '',
+                    status: 'Berhasil'
+                };
+
+                // Try to identify bank
+                const bankKeywords = {
+                    'BRI': 'bri',
+                    'BCA': 'bca',
+                    'BNI': 'bni',
+                    'MANDIRI': 'mandiri',
+                    'DANA': 'dana',
+                    'GOPAY': 'gopay',
+                    'OVO': 'ovo',
+                    'SHOPEEPAY': 'shopeepay'
+                };
+
+                for (const [bank, key] of Object.entries(bankKeywords)) {
+                    if (text.toUpperCase().includes(bank)) {
+                        data.bank = 'BANK ' + bank;
+                        break;
+                    }
+                }
+
+                // Parse based on receipt type
+                if (this.receiptType === 'tarik') {
+                    // Tarik Tunai parsing
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        
+                        if (line.includes('Nominal') || line.includes('Jumlah') || line.includes('Amount')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.nominal = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Biaya') || line.includes('Admin')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.admin = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Total')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.total = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Rekening') || line.includes('No. Rek') || line.includes('Account')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine && nextLine.match(/\d/)) {
+                                data.senderAccount = nextLine.replace(/\s/g, '');
+                            }
+                        }
+                        
+                        if (line.includes('Referensi') || line.includes('Ref') || line.includes('No. Transaksi')) {
+                            const match = line.match(/(\d{10,})/);
+                            if (match) {
+                                data.reference = match[1];
+                            } else if (lines[i + 1] && lines[i + 1].match(/^\d+$/)) {
+                                data.reference = lines[i + 1];
+                            }
+                        }
+                    }
+                } else if (this.receiptType === 'topup') {
+                    // Top Up parsing
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        
+                        if (line.includes('Nominal') || line.includes('Jumlah')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.nominal = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Admin') || line.includes('Biaya')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.admin = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Total')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.total = this.parseNumber(match[1]);
+                            }
+                        }
+                        
+                        if (line.includes('Tujuan') || line.includes('Nomor')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine && (nextLine.match(/\d{10,}/) || nextLine.includes('@'))) {
+                                data.receiverAccount = nextLine;
+                            }
+                        }
+                    }
+                } else if (this.receiptType === 'transfer') {
+                    // Transfer parsing - based on the example image
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        const upperLine = line.toUpperCase();
+                        
+                        // Look for Pengirim/Sender
+                        if (upperLine.includes('PENGIRIM') || upperLine.includes('DARI') || upperLine.includes('FROM')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine && !nextLine.includes('Bank') && !nextLine.includes('Rek')) {
+                                data.sender = nextLine;
+                            }
+                        }
+                        
+                        // Look for Penerima/Receiver
+                        if (upperLine.includes('PENERIMA') || upperLine.includes('TUJUAN') || upperLine.includes('TO')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine && !nextLine.includes('Bank') && !nextLine.includes('Rek')) {
+                                data.receiver = nextLine;
+                            }
+                        }
+                        
+                        // Bank Asal
+                        if (upperLine.includes('BANK ASAL') || upperLine.includes('DARI BANK')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine) {
+                                data.bank = nextLine;
+                            }
+                        }
+                        
+                        // Bank Tujuan
+                        if (upperLine.includes('BANK TUJUAN') || upperLine.includes('KE BANK')) {
+                            const nextLine = lines[i + 1];
+                            if (nextLine) {
+                                // Could be different from sender bank
+                            }
+                        }
+                        
+                        // Rekening Pengirim
+                        if (upperLine.includes('REK. PENGIRIM') || upperLine.includes('REKENING PENGIRIM')) {
+                            const match = line.match(/(\d{4}[\s*]+\d{4}[\s*]+\d{4}[\s*]+\d{4}|\d{10,})/);
+                            if (match) {
+                                data.senderAccount = match[1].replace(/\s/g, '');
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine && nextLine.match(/\d/)) {
+                                    data.senderAccount = nextLine.replace(/\s/g, '');
+                                }
+                            }
+                        }
+                        
+                        // Rekening Penerima
+                        if (upperLine.includes('REK. PENERIMA') || upperLine.includes('REKENING PENERIMA')) {
+                            const match = line.match(/(\*{4}[\s*]+\d{3}|\d{10,})/);
+                            if (match) {
+                                data.receiverAccount = match[1].replace(/\s/g, '');
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine && nextLine.match(/[\d*]/)) {
+                                    data.receiverAccount = nextLine.replace(/\s/g, '');
+                                }
+                            }
+                        }
+                        
+                        // Nominal
+                        if (upperLine.includes('NOMINAL') || upperLine.includes('JUMLAH')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.nominal = this.parseNumber(match[1]);
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine) {
+                                    const nextMatch = nextLine.match(/Rp[\s.]?([\d.,]+)/);
+                                    if (nextMatch) {
+                                        data.nominal = this.parseNumber(nextMatch[1]);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Admin
+                        if (upperLine.includes('ADMIN') || upperLine.includes('BIAYA')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.admin = this.parseNumber(match[1]);
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine) {
+                                    const nextMatch = nextLine.match(/Rp[\s.]?([\d.,]+)/);
+                                    if (nextMatch) {
+                                        data.admin = this.parseNumber(nextMatch[1]);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Total
+                        if (upperLine.includes('TOTAL') && !upperLine.includes('SUBTOTAL')) {
+                            const match = line.match(/Rp[\s.]?([\d.,]+)/);
+                            if (match) {
+                                data.total = this.parseNumber(match[1]);
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine) {
+                                    const nextMatch = nextLine.match(/Rp[\s.]?([\d.,]+)/);
+                                    if (nextMatch) {
+                                        data.total = this.parseNumber(nextMatch[1]);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Reference Number
+                        if (upperLine.includes('REF') || upperLine.includes('REFERENSI') || upperLine.includes('NO. TRANSAKSI')) {
+                            const match = line.match(/(\d{10,})/);
+                            if (match) {
+                                data.reference = match[1];
+                            } else {
+                                const nextLine = lines[i + 1];
+                                if (nextLine && nextLine.match(/^\d+$/)) {
+                                    data.reference = nextLine;
+                                }
+                            }
+                        }
+                        
+                        // Date
+                        if (upperLine.includes('TANGGAL') || upperLine.includes('DATE')) {
+                            const match = line.match(/(\d{1,2}[\/\-\s]\w+[\/\-\s]\d{2,4})/);
+                            if (match) {
+                                data.date = match[1];
+                            }
+                        }
+                        
+                        // Time
+                        if (upperLine.includes('WAKTU') || upperLine.includes('TIME') || upperLine.includes('JAM')) {
+                            const match = line.match(/(\d{2}:\d{2}:\d{2})/);
+                            if (match) {
+                                data.time = match[1];
+                            }
+                        }
+                    }
+                    
+                    // If total not found, calculate from nominal + admin
+                    if (data.total === 0 && data.nominal > 0) {
+                        data.total = data.nominal + data.admin;
+                    }
+                }
+
+                // Extract date/time from text if not found
+                if (!data.date) {
+                    const dateMatch = text.match(/(\d{1,2})[\/\-\s](\w+)[\/\-\s](\d{2,4})/);
+                    if (dateMatch) {
+                        data.date = dateMatch[0];
+                    }
                 }
                 
-                this.refundTransaction.refunds.push({
-                    date: new Date().toISOString(),
-                    items: itemsToRefund.map(i => ({...i})),
-                    total: refundTotal,
-                    profit: refundProfit,
-                    reason: reason,
-                    note: note
-                });
-                
-                this.refundTransaction.total -= refundTotal;
-                this.refundTransaction.profit -= refundProfit;
-                
-                itemsToRefund.forEach(refundItem => {
-                    const transItem = this.refundTransaction.items.find(i => i.id === refundItem.id);
-                    if (transItem) {
-                        transItem.qty -= refundItem.refundQty;
+                if (!data.time) {
+                    const timeMatch = text.match(/(\d{2}):(\d{2}):(\d{2})/);
+                    if (timeMatch) {
+                        data.time = timeMatch[0];
                     }
-                });
+                }
+
+                return data;
+            },
+
+            parseNumber(str) {
+                // Handle various number formats: 150.000, 150,000, 150000
+                const clean = str.replace(/[.,](?=\d{3})/g, '').replace(/,/g, '.');
+                return parseInt(clean) || 0;
+            },
+
+            displayOCRResults(data) {
+                const container = document.getElementById('ocrResultContent');
+                const box = document.getElementById('ocrResultBox');
                 
-                this.refundTransaction.items = this.refundTransaction.items.filter(i => i.qty > 0);
+                let html = '';
                 
-                this.saveData();
-                this.closeModal('refundModal');
-                this.updateCashDisplay();
-                this.updateStats();
-                this.renderTransactionList();
+                if (data.sender) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Pengirim</span>
+                            <span class="ocr-data-value">${data.sender}</span>
+                        </div>
+                    `;
+                }
                 
-                this.showToast(`Retur berhasil! Rp ${this.formatNumber(refundTotal)} dikembalikan.`);
-                this.refundTransaction = null;
+                if (data.receiver) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Penerima</span>
+                            <span class="ocr-data-value">${data.receiver}</span>
+                        </div>
+                    `;
+                }
+                
+                if (data.bank) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Bank</span>
+                            <span class="ocr-data-value">${data.bank}</span>
+                        </div>
+                    `;
+                }
+                
+                if (data.senderAccount) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Rek. Pengirim</span>
+                            <span class="ocr-data-value">${data.senderAccount}</span>
+                        </div>
+                    `;
+                }
+                
+                if (data.receiverAccount) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Rek. Penerima</span>
+                            <span class="ocr-data-value">${data.receiverAccount}</span>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="ocr-data-row">
+                        <span class="ocr-data-label">Nominal</span>
+                        <span class="ocr-data-value">Rp ${this.formatNumber(data.nominal)}</span>
+                    </div>
+                `;
+                
+                if (data.admin > 0) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Admin</span>
+                            <span class="ocr-data-value">Rp ${this.formatNumber(data.admin)}</span>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="ocr-data-row" style="color: var(--primary); font-size: 18px;">
+                        <span class="ocr-data-label">Total</span>
+                        <span class="ocr-data-value">Rp ${this.formatNumber(data.total || data.nominal + data.admin)}</span>
+                    </div>
+                `;
+                
+                if (data.reference) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">No. Referensi</span>
+                            <span class="ocr-data-value">${data.reference}</span>
+                        </div>
+                    `;
+                }
+                
+                if (data.date) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Tanggal</span>
+                            <span class="ocr-data-value">${data.date}</span>
+                        </div>
+                    `;
+                }
+                
+                if (data.time) {
+                    html += `
+                        <div class="ocr-data-row">
+                            <span class="ocr-data-label">Waktu</span>
+                            <span class="ocr-data-value">${data.time}</span>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+                box.style.display = 'block';
+            },
+
+            async processOCRResult() {
+                if (this.isSaving) return;
+                
+                if (!this.ocrData) {
+                    this.showToast('Tidak ada data untuk disimpan!');
+                    return;
+                }
+                
+                this.setLoading(true);
+                this.isSaving = true;
+
+                try {
+                    // Create transaction based on OCR data
+                    const transaction = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        type: 'ocr_' + this.receiptType,
+                        items: [{
+                            name: this.getReceiptItemName(this.ocrData),
+                            price: this.ocrData.total || this.ocrData.nominal + this.ocrData.admin,
+                            cost: 0,
+                            qty: 1
+                        }],
+                        total: this.ocrData.total || this.ocrData.nominal + this.ocrData.admin,
+                        profit: this.ocrData.admin, // Admin fee is profit
+                        paymentMethod: 'transfer',
+                        status: 'completed',
+                        transactionNumber: 'OCR-' + Date.now().toString().slice(-8),
+                        ocrData: this.ocrData,
+                        ocrReference: this.ocrData.reference
+                    };
+                    
+                    // Update cash
+                    if (this.receiptType === 'tarik') {
+                        // Tarik tunai: cash out
+                        this.data.settings.currentCash -= this.ocrData.nominal;
+                    } else {
+                        // Top up/transfer: cash in (if applicable)
+                        // For transfers, we might not change cash unless it's a deposit
+                    }
+                    
+                    this.data.transactions.push(transaction);
+                    
+                    // Also record in cash transactions if applicable
+                    if (this.receiptType === 'tarik') {
+                        this.data.cashTransactions.push({
+                            id: Date.now(),
+                            date: new Date().toISOString(),
+                            type: 'out',
+                            amount: this.ocrData.nominal,
+                            category: 'tarik_tunai_ocr',
+                            note: `Tarik Tunai ${this.ocrData.bank} - Ref: ${this.ocrData.reference}`
+                        });
+                    }
+                    
+                    await this.saveDataAsync();
+                    
+                    // Reset OCR
+                    this.initReceiptSection();
+                    
+                    this.showToast('Struk berhasil disimpan! 🎉');
+                    
+                    // Switch to transactions tab
+                    this.switchTab('transactions');
+                } finally {
+                    this.setLoading(false);
+                    this.isSaving = false;
+                }
+            },
+
+            getReceiptItemName(data) {
+                switch(this.receiptType) {
+                    case 'tarik':
+                        return `Tarik Tunai ${data.bank}`;
+                    case 'topup':
+                        return `Top Up ${data.bank || 'E-Wallet'}`;
+                    case 'transfer':
+                        return `Transfer ${data.bank} ke ${data.receiver || data.receiverAccount}`;
+                    default:
+                        return 'Transaksi OCR';
+                }
+            },
+
+            saveManualReceipt() {
+                const type = document.getElementById('manualReceiptType').value;
+                const bank = document.getElementById('manualBankType').value;
+                const nominal = parseInt(document.getElementById('manualNominal').value) || 0;
+                const admin = parseInt(document.getElementById('manualAdmin').value) || 0;
+                const sender = document.getElementById('manualSender').value;
+                const receiver = document.getElementById('manualReceiver').value;
+                const ref = document.getElementById('manualRef').value;
+                
+                if (nominal <= 0) {
+                    this.showToast('Nominal wajib diisi!');
+                    return;
+                }
+                
+                const ocrData = {
+                    type: type,
+                    bank: bank.toUpperCase(),
+                    sender: sender,
+                    receiver: receiver,
+                    nominal: nominal,
+                    admin: admin,
+                    total: nominal + admin,
+                    reference: ref,
+                    date: new Date().toLocaleDateString('id-ID'),
+                    time: new Date().toLocaleTimeString('id-ID')
+                };
+                
+                this.ocrData = ocrData;
+                this.receiptType = type;
+                this.processOCRResult();
             },
 
             // ==================== BACKUP & SETTINGS ====================
@@ -5716,16 +7050,26 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.openModal('settingsModal');
             },
 
-            saveSettings() {
-                this.data.settings.storeName = document.getElementById('storeNameInput').value || 'Hifzi Cell';
-                this.data.settings.address = document.getElementById('storeAddress').value;
-                this.data.settings.taxRate = parseInt(document.getElementById('taxRate').value) || 0;
+            async saveSettings() {
+                if (this.isSaving) return;
                 
-                document.getElementById('storeName').textContent = this.data.settings.storeName;
-                
-                this.saveData();
-                this.closeModal('settingsModal');
-                this.showToast('Pengaturan disimpan!');
+                this.setLoading(true, 'settingsModal');
+                this.isSaving = true;
+
+                try {
+                    this.data.settings.storeName = document.getElementById('storeNameInput').value || 'Hifzi Cell';
+                    this.data.settings.address = document.getElementById('storeAddress').value;
+                    this.data.settings.taxRate = parseInt(document.getElementById('taxRate').value) || 0;
+                    
+                    document.getElementById('storeName').textContent = this.data.settings.storeName;
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('settingsModal');
+                    this.showToast('Pengaturan disimpan!');
+                } finally {
+                    this.setLoading(false, 'settingsModal');
+                    this.isSaving = false;
+                }
             },
 
             openNotifications() {
