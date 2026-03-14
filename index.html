@@ -2765,8 +2765,10 @@
             <div class="ocr-result-box" id="ocrResultBox" style="display: none;">
                 <div class="ocr-result-title">📋 Hasil Pembacaan</div>
                 <div id="ocrResultContent"></div>
+                <button class="btn btn-primary" onclick="app.fillManualFromOCR()" style="width: 100%; margin-top: 15px;">
+                    📥 Gunakan Data OCR ke Form Manual
+                </button>
             </div>
-        </div>
 
         <div class="card">
             <div class="card-header">
@@ -3502,6 +3504,11 @@
             <div class="form-group">
                 <label>Alamat</label>
                 <textarea id="storeAddress" rows="2" placeholder="Alamat toko"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Nomor Telepon</label>
+                <input type="text" id="storePhone" placeholder="Contoh: 0811-66-4949">
             </div>
             
             <div class="form-group">
@@ -5694,47 +5701,66 @@
             },
 
             printReceipt(transaction) {
-                const receipt = `
-================================
-    ${this.data.settings.storeName}
-    ${this.data.settings.address || ''}
-================================
-No: ${transaction.transactionNumber}
-Tgl: ${new Date(transaction.date).toLocaleString('id-ID')}
-Kasir: ${this.data.shift.active ? 'Shift Aktif' : '-'}
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+    
+    let itemsText = '';
+    transaction.items.forEach(item => {
+        const total = item.qty * item.price;
+        itemsText += `${item.name}\n${item.qty} x Rp ${this.formatNumber(item.price)} = Rp ${this.formatNumber(total)}\n`;
+    });
+    
+    const receipt = `
+        ${this.data.settings.storeName.toUpperCase()}
+    ${this.data.settings.address || 'Simpang Ampang Pulai'}
+    Telp: ${this.data.settings.phone || '0811-66-4949'}
 --------------------------------
-${transaction.items.map(item => 
-`${item.name}
-${item.qty} x Rp ${this.formatNumber(item.price)} = Rp ${this.formatNumber(item.qty * item.price)}`
-).join('\n')}
+      KWITANSI PENJUALAN
 --------------------------------
-Total:      Rp ${this.formatNumber(transaction.total)}
-Bayar:      Rp ${this.formatNumber(transaction.received)}
-Kembali:    Rp ${this.formatNumber(transaction.change)}
-Metode:     ${transaction.paymentMethod.toUpperCase()}
-================================
-    Terima Kasih
-================================
-                `;
-                
-                console.log(receipt);
-                
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                    <head>
-                        <title>Struk ${this.data.settings.storeName}</title>
-                        <style>
-                            body { font-family: monospace; white-space: pre; padding: 20px; }
-                        </style>
-                    </head>
-                    <body>${receipt}</body>
-                    </html>
-                `);
-                printWindow.document.close();
-                printWindow.print();
-            },
-
+No Transaksi   : ${transaction.transactionNumber}
+Tanggal        : ${dateStr}
+Waktu          : ${timeStr}
+Kasir          : ${this.data.shift.active ? 'Shift Aktif' : '-'}
+--------------------------------
+${itemsText}--------------------------------
+Total          : Rp ${this.formatNumber(transaction.total)}
+Bayar          : Rp ${this.formatNumber(transaction.received)}
+Kembali        : Rp ${this.formatNumber(transaction.change)}
+Metode         : ${transaction.paymentMethod.toUpperCase()}
+--------------------------------
+        TERIMA KASIH 🙏
+      Selamat Belanja Kembali
+`;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Struk ${this.data.settings.storeName}</title>
+            <style>
+                @page { size: 80mm auto; margin: 0; }
+                body { 
+                    font-family: 'Courier New', Courier, monospace; 
+                    font-size: 12px; 
+                    line-height: 1.5;
+                    padding: 10px; 
+                    width: 76mm;
+                    margin: 0 auto;
+                    color: #000;
+                }
+                pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; }
+            </style>
+        </head>
+        <body>
+            <pre>${receipt}</pre>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+},
+            
             // ==================== CASH MANAGEMENT ====================
             updateCashDisplay() {
                 document.getElementById('currentCash').textContent = 'Rp ' + this.formatNumber(this.data.settings.currentCash);
@@ -7761,11 +7787,30 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 const receiver = document.getElementById('manualReceiver').value;
                 const ref = document.getElementById('manualRef').value;
                 const note = document.getElementById('manualNote').value;
-                
+    
                 if (nominal <= 0) {
                     this.showToast('Nominal wajib diisi!');
                     return;
                 }
+    
+                const receiptData = {
+                    type: type,
+                    bank: bank.toUpperCase(),
+                    nominal: nominal,
+                    admin: admin,
+                    total: nominal + admin,
+                    sender: sender,
+                    receiver: receiver,
+                    reference: ref,
+                    note: note,
+                    date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB',
+                    receiptNumber: 'RCPT-' + Date.now().toString().slice(-8)
+                };
+    
+                this.printReceiptOnly(receiptData);
+                this.showToast('Struk berhasil dicetak! (Tidak masuk ke laporan)');
+                },
                 
                 const receiptData = {
                     type: type,
@@ -7787,70 +7832,138 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
             },
 
             printReceiptOnly(data) {
-                let title = '';
-                let details = '';
-                
-                if (data.type === 'tarik') {
-                    title = 'STRUK TARIK TUNAI';
-                    details = `
-Bank: ${data.bank}
-Nominal: Rp ${this.formatNumber(data.nominal)}
-Biaya Admin: Rp ${this.formatNumber(data.admin)}
-Total: Rp ${this.formatNumber(data.total)}
-                    `;
-                } else if (data.type === 'topup') {
-                    title = 'STRUK TOP UP';
-                    details = `
-Jenis: ${data.bank}
-Nominal: Rp ${this.formatNumber(data.nominal)}
-Biaya Admin: Rp ${this.formatNumber(data.admin)}
-Total Bayar: Rp ${this.formatNumber(data.total)}
-                    `;
-                } else {
-                    title = 'STRUK TRANSFER';
-                    details = `
-Bank: ${data.bank}
-Dari: ${data.sender || '-'}
-Ke: ${data.receiver || '-'}
-Nominal: Rp ${this.formatNumber(data.nominal)}
-Biaya Admin: Rp ${this.formatNumber(data.admin)}
-Total: Rp ${this.formatNumber(data.total)}
-                    `;
-                }
-                
-                const receipt = `
-================================
-    ${this.data.settings.storeName}
-    ${title}
-================================
-No: ${data.receiptNumber}
-Tgl: ${data.date} ${data.time}
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+    
+    let title = '';
+    let details = '';
+    
+    if (data.type === 'tarik') {
+        title = 'STRUK TARIK TUNAI';
+        details = `Bank           : ${data.bank}
+Nominal        : Rp ${this.formatNumber(data.nominal)}
+Biaya Admin    : Rp ${this.formatNumber(data.admin)}
+Total          : Rp ${this.formatNumber(data.total)}`;
+    } else if (data.type === 'topup') {
+        title = 'STRUK TOP UP';
+        details = `Jenis          : ${data.bank}
+Nominal        : Rp ${this.formatNumber(data.nominal)}
+Biaya Admin    : Rp ${this.formatNumber(data.admin)}
+Total Bayar    : Rp ${this.formatNumber(data.total)}`;
+    } else {
+        title = 'KWITANSI';
+        details = `Tanggal        : ${dateStr}
+Waktu          : ${timeStr}
+
+Pengirim       : ${data.sender || '-'}
+Bank Asal      : ${data.bank}
+Rek. Pengirim  : ${data.senderAccount || '**** **** ****'}
+
+Penerima       : ${data.receiver || '-'}
+Bank Tujuan    : ${data.bank}
+Rek. Penerima  : ${data.receiverAccount || '**** ***'}
+
+Nominal        : Rp ${this.formatNumber(data.nominal)}
+Admin          : Rp ${this.formatNumber(data.admin)}
+Total          : Rp ${this.formatNumber(data.total)}
+Status Transaksi : Berhasil`;
+    }
+    
+    const receipt = `
+        ${this.data.settings.storeName.toUpperCase()}
+    ${this.data.settings.address || 'Simpang Ampang Pulai'}
+    Telp: ${this.data.settings.phone || '0811-66-4949'}
+--------------------------------
+        ${title}
 --------------------------------
 ${details}
 --------------------------------
-No. Ref: ${data.reference || '-'}
-${data.note ? 'Catatan: ' + data.note : ''}
-================================
-    Struk ini bukti tanda terima
-         pembayaran resmi
-================================
-                `;
-                
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                    <head>
-                        <title>${title} - ${this.data.settings.storeName}</title>
-                        <style>
-                            body { font-family: monospace; white-space: pre; padding: 20px; }
-                        </style>
-                    </head>
-                    <body>${receipt}</body>
-                    </html>
-                `);
-                printWindow.document.close();
-                printWindow.print();
-            },
+Ref. No        : ${data.reference || '-'}
+${data.note ? 'Catatan        : ' + data.note : ''}
+--------------------------------
+        TERIMA KASIH 🙏
+`;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${title} - ${this.data.settings.storeName}</title>
+            <style>
+                @page { size: 80mm auto; margin: 0; }
+                body { 
+                    font-family: 'Courier New', Courier, monospace; 
+                    font-size: 12px; 
+                    line-height: 1.5;
+                    padding: 10px; 
+                    width: 76mm;
+                    margin: 0 auto;
+                    color: #000;
+                }
+                pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; }
+            </style>
+        </head>
+        <body>
+            <pre>${receipt}</pre>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+},
+
+        fillManualFromOCR() {
+    if (!this.ocrData) {
+        this.showToast('Tidak ada data OCR!');
+        return;
+    }
+    
+    const data = this.ocrData;
+    
+    if (data.type) {
+        document.getElementById('manualReceiptType').value = data.type;
+        this.setReceiptType(data.type);
+    }
+    
+    if (data.bank) {
+        const bankMap = {
+            'BANK BRI': 'bri',
+            'BANK BCA': 'bca', 
+            'BANK BNI': 'bni',
+            'BANK MANDIRI': 'mandiri',
+            'DANA': 'dana',
+            'GOPAY': 'gopay',
+            'OVO': 'ovo',
+            'SHOPEEPAY': 'shopeepay'
+        };
+        
+        const bankKey = Object.keys(bankMap).find(k => data.bank.toUpperCase().includes(k));
+        if (bankKey) {
+            document.getElementById('manualBankType').value = bankMap[bankKey];
+        }
+    }
+    
+    if (data.nominal) {
+        document.getElementById('manualNominal').value = data.nominal;
+    }
+    if (data.admin) {
+        document.getElementById('manualAdmin').value = data.admin;
+    }
+    if (data.sender) {
+        document.getElementById('manualSender').value = data.sender;
+    }
+    if (data.receiver) {
+        document.getElementById('manualReceiver').value = data.receiver;
+    }
+    if (data.reference) {
+        document.getElementById('manualRef').value = data.reference;
+    }
+    
+    this.showToast('Data OCR telah diisi ke form manual!');
+    document.getElementById('manualReceiptType').scrollIntoView({ behavior: 'smooth' });
+},
+        
 
             // ==================== BACKUP & SETTINGS ====================
             updateBackupInfo() {
@@ -7896,34 +8009,34 @@ ${data.note ? 'Catatan: ' + data.note : ''}
             },
 
             openSettings() {
-                document.getElementById('storeNameInput').value = this.data.settings.storeName;
-                document.getElementById('storeAddress').value = this.data.settings.address || '';
-                document.getElementById('taxRate').value = this.data.settings.taxRate;
-                this.openModal('settingsModal');
-            },
-
+    document.getElementById('storeNameInput').value = this.data.settings.storeName;
+    document.getElementById('storeAddress').value = this.data.settings.address || '';
+    document.getElementById('storePhone').value = this.data.settings.phone || ''; // TAMBAHKAN INI
+    document.getElementById('taxRate').value = this.data.settings.taxRate;
+    this.openModal('settingsModal');
+},
             async saveSettings() {
-                if (this.isSaving) return;
-                
-                this.setLoading(true, 'settingsModal');
-                this.isSaving = true;
+    if (this.isSaving) return;
+    
+    this.setLoading(true, 'settingsModal');
+    this.isSaving = true;
 
-                try {
-                    this.data.settings.storeName = document.getElementById('storeNameInput').value || 'Hifzi Cell';
-                    this.data.settings.address = document.getElementById('storeAddress').value;
-                    this.data.settings.taxRate = parseInt(document.getElementById('taxRate').value) || 0;
-                    
-                    document.getElementById('storeName').textContent = this.data.settings.storeName;
-                    
-                    await this.saveDataAsync();
-                    this.closeModal('settingsModal');
-                    this.showToast('Pengaturan disimpan!');
-                } finally {
-                    this.setLoading(false, 'settingsModal');
-                    this.isSaving = false;
-                }
-            },
-
+    try {
+        this.data.settings.storeName = document.getElementById('storeNameInput').value || 'Hifzi Cell';
+        this.data.settings.address = document.getElementById('storeAddress').value;
+        this.data.settings.phone = document.getElementById('storePhone').value || '0811-66-4949'; // TAMBAHKAN INI
+        this.data.settings.taxRate = parseInt(document.getElementById('taxRate').value) || 0;
+        
+        document.getElementById('storeName').textContent = this.data.settings.storeName;
+        
+        await this.saveDataAsync();
+        this.closeModal('settingsModal');
+        this.showToast('Pengaturan disimpan!');
+    } finally {
+        this.setLoading(false, 'settingsModal');
+        this.isSaving = false;
+    }
+},
             openNotifications() {
                 this.showToast('Tidak ada notifikasi baru');
             },
