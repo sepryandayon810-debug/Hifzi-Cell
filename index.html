@@ -399,15 +399,15 @@
         }
 
         .category-list-item .cat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .category-list-item.active .cat-icon {
@@ -459,15 +459,15 @@
         }
 
         .folder-item .folder-icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 8px;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         .folder-item.active .folder-icon {
@@ -527,8 +527,8 @@
         }
 
         .product-img {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-radius: 50%;
             margin: 0 auto 10px;
@@ -536,7 +536,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         .product-name {
@@ -761,6 +761,12 @@
         .cash-btn.topup {
             background: #f3e5f5;
             color: #9c27b0;
+        }
+
+        .cash-btn.modal-awal {
+            background: #fff8e1;
+            color: #f57c00;
+            border: 2px dashed #ffd54f;
         }
 
         .report-filters {
@@ -1823,6 +1829,102 @@
             50% { transform: translateX(5px); }
         }
 
+        /* NEW: Batch Stock Update Styles */
+        .batch-stock-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .batch-stock-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .batch-stock-item input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .batch-stock-item input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .batch-stock-item .item-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .batch-stock-item .item-current {
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .batch-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .batch-actions .btn-set {
+            background: var(--primary);
+            color: white;
+        }
+
+        .batch-actions .btn-add {
+            background: var(--success);
+            color: white;
+        }
+
+        .batch-actions .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .batch-summary {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .batch-summary-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .batch-summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
         @media (max-width: 380px) {
             .products-grid {
                 grid-template-columns: 1fr;
@@ -1844,7 +1946,7 @@
     <div class="header">
         <div class="header-top">
             <div>
-                <h1>📱 HIFZI CELL</h1>
+                <h1>📱 Hifzi Cell</h1>
                 <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;" id="storeName">Toko Saya</div>
             </div>
             <div class="header-actions">
@@ -1962,7 +2064,7 @@
                 </button>
                 <button class="quick-btn" onclick="app.openStockModal()">
                     <div class="quick-icon" style="background: #f3e5f5;">📦</div>
-                    <div class="quick-text">Stok</div>
+                    <div class="quick-text">Stok Masal</div>
                 </button>
             </div>
 
@@ -2008,15 +2110,20 @@
                     <span style="font-size: 24px;">💜</span>
                     <span>Top Up</span>
                 </button>
+                <button class="cash-btn modal-awal" onclick="app.openModalAwalModal()">
+                    <span style="font-size: 24px;">💰</span>
+                    <span>Modal Awal</span>
+                </button>
                 <button class="cash-btn history" onclick="app.openCashHistory()">
                     <span style="font-size: 24px;">📋</span>
-                    <span>Riwayat Hari Ini</span>
+                    <span>Riwayat</span>
                 </button>
             </div>
 
             <div class="info-box">
                 <div class="info-title">💡 Info Transaksi</div>
                 <div class="info-text">
+                    <b>Modal Awal:</b> Input modal awal shift. Akan ditambahkan ke Kas di Tangan.<br>
                     <b>Tarik Tunai:</b> Uang keluar sesuai nominal. Admin dicatat terpisah di Kasir.<br>
                     <b>Top Up:</b> Uang masuk sesuian nominal. Admin dicatat terpisah di Kasir.
                 </div>
@@ -2215,7 +2322,7 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0;">
                     <span>Versi Aplikasi</span>
-                    <b>Hifzi Cell 3.1 Cloud</b>
+                    <b>Hifzi Cell 3.2 Cloud</b>
                 </div>
             </div>
         </div>
@@ -2260,6 +2367,54 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('cashModal')">Batal</button>
                 <button class="btn btn-primary" onclick="app.saveCashTransaction()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Awal Modal (NEW) -->
+    <div class="modal" id="modalAwalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">💰 Input Modal Awal</span>
+                <button class="close-btn" onclick="app.closeModal('modalAwalModal')">×</button>
+            </div>
+            
+            <div class="info-box" style="background: #fff8e1; border-left-color: #f57c00;">
+                <div class="info-title" style="color: #e65100;">📌 Modal Awal Shift</div>
+                <div class="info-text">
+                    Modal awal akan ditambahkan ke <b>Kas di Tangan</b> dan tercatat sebagai Modal Awal Shift.
+                    Pastikan jumlah uang fisik di laci sesuai dengan modal yang diinput.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Jumlah Modal Awal (Rp)</label>
+                <input type="number" id="modalAwalInput" placeholder="Contoh: 500000" inputmode="numeric">
+            </div>
+            
+            <div class="form-group">
+                <label>Keterangan (Opsional)</label>
+                <textarea id="modalAwalNote" rows="2" placeholder="Catatan modal awal..."></textarea>
+            </div>
+
+            <div class="calculation-box" style="background: #fff8e1;">
+                <div class="calc-row">
+                    <span>Kas Saat Ini:</span>
+                    <span id="currentCashBefore">Rp 0</span>
+                </div>
+                <div class="calc-row">
+                    <span>Modal Awal:</span>
+                    <span id="modalAwalPreview">Rp 0</span>
+                </div>
+                <div class="calc-row" style="color: #f57c00; font-weight: 700;">
+                    <span>Total Kas Setelah Input:</span>
+                    <span id="totalCashAfter">Rp 0</span>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('modalAwalModal')">Batal</button>
+                <button class="btn btn-warning" onclick="app.saveModalAwal()">Simpan Modal Awal</button>
             </div>
         </div>
     </div>
@@ -2551,6 +2706,50 @@
         </div>
     </div>
 
+    <!-- Batch Stock Modal (NEW) -->
+    <div class="modal" id="batchStockModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">📦 Update Stok Masal</span>
+                <button class="close-btn" onclick="app.closeModal('batchStockModal')">×</button>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">📝 Cara Penggunaan</div>
+                <div class="info-text">
+                    Masukkan jumlah stok baru untuk setiap produk. Pilih mode <b>Set</b> untuk mengganti total stok, atau <b>Tambah</b> untuk menambah stok existing.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Filter Kategori (Opsional)</label>
+                <select id="batchStockCategory" onchange="app.filterBatchStock()">
+                    <option value="all">Semua Kategori</option>
+                </select>
+            </div>
+
+            <div class="batch-actions">
+                <button class="btn-set" onclick="app.setBatchMode('set')">Set Stok</button>
+                <button class="btn-add" onclick="app.setBatchMode('add')">Tambah Stok</button>
+                <button class="btn-reset" onclick="app.resetBatchStock()">Reset</button>
+            </div>
+
+            <div class="batch-stock-container" id="batchStockContainer">
+                <!-- Products will be rendered here -->
+            </div>
+
+            <div class="batch-summary">
+                <div class="batch-summary-number" id="batchTotalProducts">0</div>
+                <div class="batch-summary-label">Produk akan diupdate</div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('batchStockModal')">Batal</button>
+                <button class="btn btn-success" onclick="app.saveBatchStock()">💾 Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
@@ -2812,6 +3011,10 @@
                 lastTap: 0
             },
 
+            // NEW: Batch stock state
+            batchStockMode: 'set', // 'set' or 'add'
+            batchStockData: {},
+
             init() {
                 console.log('Initializing Hifzi Cell...');
                 
@@ -2922,6 +3125,215 @@
                     }
                     lastTouchEnd = now;
                 }, false);
+
+                // Modal Awal input listener for real-time calculation
+                const modalAwalInput = document.getElementById('modalAwalInput');
+                if (modalAwalInput) {
+                    modalAwalInput.addEventListener('input', () => this.updateModalAwalPreview());
+                }
+            },
+
+            // ==================== MODAL AWAL (NEW) ====================
+            openModalAwalModal() {
+                document.getElementById('modalAwalInput').value = '';
+                document.getElementById('modalAwalNote').value = '';
+                this.updateModalAwalPreview();
+                this.openModal('modalAwalModal');
+            },
+
+            updateModalAwalPreview() {
+                const currentCash = this.data.settings.currentCash || 0;
+                const modalAwal = parseInt(document.getElementById('modalAwalInput').value) || 0;
+                const total = currentCash + modalAwal;
+
+                document.getElementById('currentCashBefore').textContent = 'Rp ' + this.formatNumber(currentCash);
+                document.getElementById('modalAwalPreview').textContent = 'Rp ' + this.formatNumber(modalAwal);
+                document.getElementById('totalCashAfter').textContent = 'Rp ' + this.formatNumber(total);
+            },
+
+            saveModalAwal() {
+                const amount = parseInt(document.getElementById('modalAwalInput').value) || 0;
+                const note = document.getElementById('modalAwalNote').value || 'Modal Awal Shift';
+
+                if (amount <= 0) {
+                    this.showToast('Jumlah modal awal harus lebih dari 0!');
+                    return;
+                }
+
+                // Update settings
+                this.data.settings.modalAwal = amount;
+                this.data.settings.currentCash += amount;
+
+                // Record in cash transactions
+                this.data.cashTransactions.push({
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    type: 'modal_in',
+                    amount: amount,
+                    category: 'modal_awal',
+                    note: note
+                });
+
+                // Update shift data
+                this.data.shift.modalAwal = amount;
+
+                this.saveData();
+                this.closeModal('modalAwalModal');
+                this.updateCashDisplay();
+                this.updateCashStats();
+                this.renderCashTransactions();
+
+                this.showToast(`Modal awal Rp ${this.formatNumber(amount)} tersimpan dan ditambahkan ke kas!`);
+            },
+
+            // ==================== BATCH STOCK UPDATE (NEW) ====================
+            openStockModal() {
+                this.batchStockMode = 'set';
+                this.batchStockData = {};
+                
+                // Populate category filter
+                const catSelect = document.getElementById('batchStockCategory');
+                catSelect.innerHTML = '<option value="all">Semua Kategori</option>';
+                this.data.categories.filter(c => c.id !== 'all').forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    catSelect.appendChild(option);
+                });
+                
+                this.renderBatchStockItems();
+                this.openModal('batchStockModal');
+            },
+
+            filterBatchStock() {
+                this.renderBatchStockItems();
+            },
+
+            setBatchMode(mode) {
+                this.batchStockMode = mode;
+                
+                // Update button styles
+                document.querySelectorAll('.batch-actions button').forEach(btn => {
+                    btn.style.opacity = '0.6';
+                });
+                
+                const activeBtn = mode === 'set' ? document.querySelector('.btn-set') : document.querySelector('.btn-add');
+                if (activeBtn) activeBtn.style.opacity = '1';
+                
+                this.showToast(`Mode: ${mode === 'set' ? 'Set Stok (ganti total)' : 'Tambah Stok (tambah ke existing)'}`);
+            },
+
+            resetBatchStock() {
+                this.batchStockData = {};
+                this.renderBatchStockItems();
+                this.showToast('Input direset!');
+            },
+
+            renderBatchStockItems() {
+                const container = document.getElementById('batchStockContainer');
+                const filterCat = document.getElementById('batchStockCategory').value;
+                
+                let filtered = this.data.products;
+                if (filterCat !== 'all') {
+                    filtered = filtered.filter(p => p.category === filterCat);
+                }
+                
+                // Sort by name
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+                
+                container.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <p>Tidak ada produk</p>
+                        </div>
+                    `;
+                    document.getElementById('batchTotalProducts').textContent = '0';
+                    return;
+                }
+                
+                filtered.forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'batch-stock-item';
+                    
+                    const currentStock = product.stock || 0;
+                    const inputValue = this.batchStockData[product.id] || '';
+                    
+                    item.innerHTML = `
+                        <div class="item-name">${product.name}</div>
+                        <div class="item-current">Stok: ${currentStock}</div>
+                        <input type="number" 
+                               placeholder="0" 
+                               value="${inputValue}"
+                               onchange="app.updateBatchStock(${product.id}, this.value)"
+                               inputmode="numeric">
+                    `;
+                    
+                    container.appendChild(item);
+                });
+                
+                // Update count of items with values
+                const filledCount = Object.keys(this.batchStockData).length;
+                document.getElementById('batchTotalProducts').textContent = filledCount;
+            },
+
+            updateBatchStock(productId, value) {
+                const numValue = parseInt(value) || 0;
+                
+                if (numValue === 0) {
+                    delete this.batchStockData[productId];
+                } else {
+                    this.batchStockData[productId] = numValue;
+                }
+                
+                // Update count
+                const filledCount = Object.keys(this.batchStockData).length;
+                document.getElementById('batchTotalProducts').textContent = filledCount;
+            },
+
+            saveBatchStock() {
+                const updates = Object.keys(this.batchStockData);
+                
+                if (updates.length === 0) {
+                    this.showToast('Tidak ada perubahan stok!');
+                    return;
+                }
+                
+                let updatedCount = 0;
+                
+                updates.forEach(productId => {
+                    const product = this.data.products.find(p => p.id == productId);
+                    if (product) {
+                        const newValue = this.batchStockData[productId];
+                        
+                        if (this.batchStockMode === 'set') {
+                            // Set mode: replace stock
+                            product.stock = newValue;
+                        } else {
+                            // Add mode: add to existing
+                            product.stock = (product.stock || 0) + newValue;
+                        }
+                        
+                        updatedCount++;
+                    }
+                });
+                
+                this.saveData();
+                this.closeModal('batchStockModal');
+                
+                // Refresh displays
+                this.renderProducts();
+                this.renderProductList();
+                
+                // Sync to cloud if online
+                if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                    this.syncToCloud();
+                }
+                
+                const modeText = this.batchStockMode === 'set' ? 'diupdate' : 'ditambah';
+                this.showToast(`${updatedCount} produk stok berhasil ${modeText}!`);
             },
 
             // ==================== CLOUD SYNC ====================
@@ -5295,10 +5707,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 a.href = url;
                 a.download = `produk-export-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
-            },
-
-            openStockModal() {
-                this.showToast('Fitur stok massal akan segera hadir!');
             },
 
             openSettings() {
