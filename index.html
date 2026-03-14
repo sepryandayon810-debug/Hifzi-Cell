@@ -5693,180 +5693,47 @@
                 }
             },
 
-           printReceipt(transaction){
-    const now=new Date();
-    const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-    const timeStr=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' WIB';
-    
-    // Generate items HTML dengan format lebih rapi
-    let itemsHtml='';
-    transaction.items.forEach(item=>{
-        const total=item.qty*item.price;
-        itemsHtml+=`
-            <div class="item-row">
-                <div class="item-name">${item.name}</div>
-                <div class="item-qty">${item.qty} x Rp ${this.formatNumber(item.price)}</div>
-                <div class="item-total">Rp ${this.formatNumber(total)}</div>
-            </div>
-        `;
-    });
-    
-    const receiptHtml=`<!DOCTYPE html>
-<html>
-<head>
-    <title>Struk ${this.data.settings.storeName}</title>
-    <style>
-        @page { size: 80mm auto; margin: 0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Courier New', Courier, monospace; 
-            font-size: 11px; 
-            line-height: 1.4; 
-            padding: 8px; 
-            width: 76mm; 
-            margin: 0 auto; 
-            color: #000;
-            background: #fff;
-        }
-        .header { text-align: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #000; }
-        .store-name { font-size: 14px; font-weight: bold; margin-bottom: 3px; letter-spacing: 1px; }
-        .store-info { font-size: 9px; color: #333; line-height: 1.4; }
-        .title { 
-            text-align: center; 
-            font-size: 11px; 
-            font-weight: bold; 
-            margin: 6px 0; 
-            padding: 4px 0; 
-            border-top: 1px solid #000; 
-            border-bottom: 1px solid #000;
-            background: #f5f5f5;
-        }
-        .info-section { margin: 6px 0; }
-        .info-row { display: flex; justify-content: space-between; margin: 2px 0; font-size: 10px; }
-        .info-label { color: #555; }
-        .items { margin: 8px 0; }
-        .item-row { 
-            margin: 5px 0; 
-            padding: 4px 0; 
-            border-bottom: 1px dotted #ccc; 
-        }
-        .item-row:last-child { border-bottom: none; }
-        .item-name { font-weight: bold; font-size: 10px; margin-bottom: 2px; }
-        .item-qty { font-size: 9px; color: #555; float: left; }
-        .item-total { text-align: right; font-weight: bold; font-size: 10px; }
-        .divider { border-top: 1px dashed #000; margin: 8px 0; }
-        .summary { margin-top: 5px; }
-        .summary-row { display: flex; justify-content: space-between; margin: 3px 0; font-size: 10px; }
-        .summary-row.total { 
-            font-size: 12px; 
-            font-weight: bold; 
-            border-top: 2px solid #000; 
-            border-bottom: 2px solid #000;
-            padding: 5px 0; 
-            margin-top: 5px; 
-        }
-        .summary-row.change { color: #0066cc; font-weight: bold; }
-        .barcode-section { 
-            text-align: center; 
-            margin: 10px 0; 
-            padding: 8px 0;
-            border-top: 1px dashed #ccc;
-            border-bottom: 1px dashed #ccc;
-        }
-        .barcode { 
-            font-family: monospace; 
-            font-size: 20px; 
-            letter-spacing: 3px;
-            margin-bottom: 3px;
-        }
-        .trx-number { font-size: 9px; letter-spacing: 1px; color: #555; }
-        .footer { text-align: center; margin-top: 12px; padding-top: 8px; }
-        .thank-you { font-size: 12px; font-weight: bold; margin-bottom: 3px; letter-spacing: 2px; }
-        .footer-text { font-size: 9px; color: #555; margin: 2px 0; }
-        .powered { margin-top: 8px; font-size: 8px; color: #999; }
-        @media print { body { width: 76mm; } }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="store-name">${this.data.settings.storeName.toUpperCase()}</div>
-        <div class="store-info">${this.data.settings.address||'Alamat Toko'}</div>
-        <div class="store-info">Telp: ${this.data.settings.phone||'-'}</div>
-    </div>
-    
-    <div class="title">KWITANSI PENJUALAN</div>
-    
-    <div class="info-section">
-        <div class="info-row">
-            <span class="info-label">No Transaksi</span>
-            <span style="font-weight:bold;">${transaction.transactionNumber}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Tanggal</span>
-            <span>${dateStr}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Waktu</span>
-            <span>${timeStr}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Kasir</span>
-            <span>${this.data.shift.active?'Shift Aktif':'-'}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Metode Bayar</span>
-            <span style="text-transform:uppercase;font-weight:bold;">${transaction.paymentMethod}</span>
-        </div>
-    </div>
-    
-    <div class="divider"></div>
-    
-    <div class="items">
-        ${itemsHtml}
-    </div>
-    
-    <div class="divider"></div>
-    
-    <div class="summary">
-        <div class="summary-row">
-            <span>SUBTOTAL</span>
-            <span>Rp ${this.formatNumber(transaction.total)}</span>
-        </div>
-        ${transaction.paymentMethod==='cash'?`
-        <div class="summary-row">
-            <span>TUNAI</span>
-            <span>Rp ${this.formatNumber(transaction.received)}</span>
-        </div>
-        <div class="summary-row change">
-            <span>KEMBALI</span>
-            <span>Rp ${this.formatNumber(transaction.change)}</span>
-        </div>
-        `:''}
-        <div class="summary-row total">
-            <span>TOTAL BAYAR</span>
-            <span>Rp ${this.formatNumber(transaction.total)}</span>
-        </div>
-    </div>
-    
-    <div class="barcode-section">
-        <div class="barcode">*${transaction.transactionNumber}*</div>
-        <div class="trx-number">${transaction.transactionNumber}</div>
-    </div>
-    
-    <div class="footer">
-        <div class="thank-you">TERIMA KASIH</div>
-        <div class="footer-text">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-        <div class="footer-text">Selamat Belanja Kembali</div>
-        <div class="powered">Powered by Hifzi Cell POS</div>
-    </div>
-</body>
-</html>`;
-    
-    const printWindow=window.open('','_blank');
-    printWindow.document.write(receiptHtml);
-    printWindow.document.close();
-    setTimeout(()=>printWindow.print(),250);
-}
+            printReceipt(transaction) {
+                const receipt = `
+================================
+    ${this.data.settings.storeName}
+    ${this.data.settings.address || ''}
+================================
+No: ${transaction.transactionNumber}
+Tgl: ${new Date(transaction.date).toLocaleString('id-ID')}
+Kasir: ${this.data.shift.active ? 'Shift Aktif' : '-'}
+--------------------------------
+${transaction.items.map(item => 
+`${item.name}
+${item.qty} x Rp ${this.formatNumber(item.price)} = Rp ${this.formatNumber(item.qty * item.price)}`
+).join('\n')}
+--------------------------------
+Total:      Rp ${this.formatNumber(transaction.total)}
+Bayar:      Rp ${this.formatNumber(transaction.received)}
+Kembali:    Rp ${this.formatNumber(transaction.change)}
+Metode:     ${transaction.paymentMethod.toUpperCase()}
+================================
+    Terima Kasih
+================================
+                `;
+                
+                console.log(receipt);
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Struk ${this.data.settings.storeName}</title>
+                        <style>
+                            body { font-family: monospace; white-space: pre; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>${receipt}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+            },
 
             // ==================== CASH MANAGEMENT ====================
             updateCashDisplay() {
@@ -7919,28 +7786,71 @@
                 this.showToast('Struk berhasil dicetak! (Tidak masuk ke laporan)');
             },
 
-            printReceiptOnly(data){
-    const now=new Date();
-    const dateStr=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-    const timeStr=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' WIB';
-    let title='';
-    let details='';
-    if(data.type==='tarik'){
-        title='STRUK TARIK TUNAI';
-        details='Bank           : '+data.bank+'\nNominal        : Rp '+this.formatNumber(data.nominal)+'\nBiaya Admin    : Rp '+this.formatNumber(data.admin)+'\nTotal          : Rp '+this.formatNumber(data.total);
-    }else if(data.type==='topup'){
-        title='STRUK TOP UP';
-        details='Jenis          : '+data.bank+'\nNominal        : Rp '+this.formatNumber(data.nominal)+'\nBiaya Admin    : Rp '+this.formatNumber(data.admin)+'\nTotal Bayar    : Rp '+this.formatNumber(data.total);
-    }else{
-        title='KWITANSI';
-        details='Tanggal        : '+dateStr+'\nWaktu          : '+timeStr+'\n\nPengirim       : '+(data.sender||'-')+'\nBank Asal      : '+data.bank+'\nRek. Pengirim  : **** **** ****\n\nPenerima       : '+(data.receiver||'-')+'\nBank Tujuan    : '+data.bank+'\nRek. Penerima  : **** ***\n\nNominal        : Rp '+this.formatNumber(data.nominal)+'\nAdmin          : Rp '+this.formatNumber(data.admin)+'\nTotal          : Rp '+this.formatNumber(data.total)+'\nStatus Transaksi : Berhasil';
-    }
-    const receipt='        '+this.data.settings.storeName.toUpperCase()+'\n    '+(this.data.settings.address||'Simpang Ampang Pulai')+'\n    Telp: '+(this.data.settings.phone||'0811-66-4949')+'\n--------------------------------\n        '+title+'\n--------------------------------\n'+details+'\n--------------------------------\nRef. No        : '+(data.reference||'-')+(data.note?'\nCatatan        : '+data.note:'')+'\n--------------------------------\n        TERIMA KASIH 🙏\n';
-    const printWindow=window.open('','_blank');
-    printWindow.document.write('<html><head><title>'+title+' - '+this.data.settings.storeName+'</title><style>@page{size:80mm auto;margin:0}body{font-family:\'Courier New\',Courier,monospace;font-size:12px;line-height:1.5;padding:10px;width:76mm;margin:0 auto;color:#000}pre{margin:0;white-space:pre-wrap;word-wrap:break-word}</style></head><body><pre>'+receipt+'</pre></body></html>');
-    printWindow.document.close();
-    printWindow.print();
-},
+            printReceiptOnly(data) {
+                let title = '';
+                let details = '';
+                
+                if (data.type === 'tarik') {
+                    title = 'STRUK TARIK TUNAI';
+                    details = `
+Bank: ${data.bank}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total: Rp ${this.formatNumber(data.total)}
+                    `;
+                } else if (data.type === 'topup') {
+                    title = 'STRUK TOP UP';
+                    details = `
+Jenis: ${data.bank}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total Bayar: Rp ${this.formatNumber(data.total)}
+                    `;
+                } else {
+                    title = 'STRUK TRANSFER';
+                    details = `
+Bank: ${data.bank}
+Dari: ${data.sender || '-'}
+Ke: ${data.receiver || '-'}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total: Rp ${this.formatNumber(data.total)}
+                    `;
+                }
+                
+                const receipt = `
+================================
+    ${this.data.settings.storeName}
+    ${title}
+================================
+No: ${data.receiptNumber}
+Tgl: ${data.date} ${data.time}
+--------------------------------
+${details}
+--------------------------------
+No. Ref: ${data.reference || '-'}
+${data.note ? 'Catatan: ' + data.note : ''}
+================================
+    Struk ini bukti tanda terima
+         pembayaran resmi
+================================
+                `;
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>${title} - ${this.data.settings.storeName}</title>
+                        <style>
+                            body { font-family: monospace; white-space: pre; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>${receipt}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+            },
 
             // ==================== BACKUP & SETTINGS ====================
             updateBackupInfo() {
@@ -7948,24 +7858,6 @@
                 document.getElementById('infoTransactionCount').textContent = this.data.transactions.length;
                 document.getElementById('infoDebtCount').textContent = this.data.debts.length; // NEW
             },
-
-            fillManualFromOCR(){
-    if(!this.ocrData){this.showToast('Tidak ada data OCR!');return}
-    const data=this.ocrData;
-    if(data.type){document.getElementById('manualReceiptType').value=data.type;this.setReceiptType(data.type)}
-    if(data.bank){
-        const bankMap={'BANK BRI':'bri','BANK BCA':'bca','BANK BNI':'bni','BANK MANDIRI':'mandiri','DANA':'dana','GOPAY':'gopay','OVO':'ovo','SHOPEEPAY':'shopeepay'};
-        const bankKey=Object.keys(bankMap).find(k=>data.bank.toUpperCase().includes(k));
-        if(bankKey)document.getElementById('manualBankType').value=bankMap[bankKey];
-    }
-    if(data.nominal)document.getElementById('manualNominal').value=data.nominal;
-    if(data.admin)document.getElementById('manualAdmin').value=data.admin;
-    if(data.sender)document.getElementById('manualSender').value=data.sender;
-    if(data.receiver)document.getElementById('manualReceiver').value=data.receiver;
-    if(data.reference)document.getElementById('manualRef').value=data.reference;
-    this.showToast('Data OCR telah diisi ke form manual!');
-    document.getElementById('manualReceiptType').scrollIntoView({behavior:'smooth'});
-},
 
             exportExcel() {
                 const data = this.data.products.map(p => ({
