@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hifzi Cell - Kasir Pintar Cloud</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Tambahkan Tesseract.js untuk OCR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
     <style>
         * {
@@ -292,7 +291,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* IMPROVED: Category Pills with better scroll indicators */
         .category-pills {
             display: flex;
             gap: 10px;
@@ -305,11 +303,9 @@
             position: relative;
             mask-image: linear-gradient(to right, black 90%, transparent 100%);
             -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
-            /* Simpan posisi scroll */
             scroll-behavior: smooth;
         }
 
-        /* Scroll hint gradient on left */
         .category-pills::before {
             content: '';
             position: absolute;
@@ -502,7 +498,6 @@
             gap: 15px;
         }
 
-        /* IMPROVED: Product card with better touch handling */
         .product-card {
             background: white;
             border-radius: 16px;
@@ -519,7 +514,6 @@
             overflow: hidden;
         }
 
-        /* Prevent accidental double taps */
         .product-card.adding {
             pointer-events: none;
             opacity: 0.7;
@@ -1812,7 +1806,6 @@
             cursor: not-allowed;
         }
 
-        /* NEW: Print confirmation checkbox */
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -1837,7 +1830,6 @@
             user-select: none;
         }
 
-        /* NEW: Scroll indicator for categories */
         .scroll-hint {
             display: flex;
             align-items: center;
@@ -1858,7 +1850,6 @@
             50% { transform: translateX(5px); }
         }
 
-        /* NEW: Batch Stock Update Styles */
         .batch-stock-container {
             max-height: 400px;
             overflow-y: auto;
@@ -1954,7 +1945,6 @@
             margin-top: 5px;
         }
 
-        /* NEW: OCR Receipt Styles */
         .ocr-upload-area {
             border: 3px dashed #ddd;
             border-radius: 16px;
@@ -2111,6 +2101,176 @@
             font-weight: 600;
         }
 
+        /* NEW: Manual Transaction Styles */
+        .manual-item-row {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .manual-item-row .form-group {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .manual-item-row .form-group input {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .manual-item-row .btn-danger {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+        }
+
+        .profit-display {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success);
+            text-align: center;
+        }
+
+        /* NEW: Debt/Hutang Styles */
+        .debt-summary-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .debt-summary-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .debt-summary-amount {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .debt-person-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--danger);
+        }
+
+        .debt-person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .debt-person-name {
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .debt-person-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        .debt-person-meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .debt-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .debt-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .debt-btn.pay {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+
+        .debt-btn.add {
+            background: #e3f2fd;
+            color: var(--primary);
+        }
+
+        .debt-btn.history {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .debt-item-list {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+        }
+
+        .debt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .debt-item-name {
+            color: #666;
+        }
+
+        .debt-item-amount {
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .debt-item-paid {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .debt-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            background: #ffebee;
+            color: var(--danger);
+        }
+
+        .debt-badge.paid {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+
         @media (max-width: 380px) {
             .products-grid {
                 grid-template-columns: 1fr;
@@ -2126,7 +2286,6 @@
             }
         }
 
-        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -2164,7 +2323,6 @@
             color: #666;
         }
 
-        /* Save button loading state */
         .btn.saving {
             position: relative;
             color: transparent !important;
@@ -2237,6 +2395,7 @@
         <button class="nav-tab" onclick="app.switchTab('cash')">💵 Kas</button>
         <button class="nav-tab" onclick="app.switchTab('reports')">📊 Laporan</button>
         <button class="nav-tab" onclick="app.switchTab('transactions')">📝 Transaksi</button>
+        <button class="nav-tab" onclick="app.switchTab('debt')">💳 Hutang</button>
         <button class="nav-tab" onclick="app.switchTab('receipt')">🧾 Struk</button>
         <button class="nav-tab" onclick="app.switchTab('backup')">☁️ Cloud</button>
     </div>
@@ -2246,6 +2405,21 @@
         <div class="shift-info" id="shiftBanner">
             <div class="shift-title">Shift Berjalan</div>
             <div class="shift-time" id="shiftTime">Mulai: --:-- | Durasi: 0j 0m</div>
+        </div>
+
+        <!-- NEW: Manual Transaction Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📝 Transaksi Manual</span>
+                <button class="btn-sm btn-primary-sm" onclick="app.openManualTransactionModal()">+ Tambah</button>
+            </div>
+            <div class="info-box" style="margin-bottom: 0;">
+                <div class="info-title">💡 Untuk Produk Tidak Terdaftar</div>
+                <div class="info-text">
+                    Gunakan fitur ini untuk mencatat penjualan produk yang belum ada di daftar produk. 
+                    Sistem akan menghitung laba otomatis dari harga modal dan harga jual.
+                </div>
+            </div>
         </div>
 
         <div class="card" id="cartCard" style="display: none;">
@@ -2275,12 +2449,10 @@
                 </button>
             </div>
 
-            <!-- IMPROVED: Added scroll hint -->
             <div id="categoryContainer">
                 <div class="category-pills" id="categoryPills"></div>
             </div>
             
-            <!-- Scroll hint indicator -->
             <div class="scroll-hint" id="scrollHint" style="display: none;">
                 <span>←</span> Geser untuk melihat kategori lain <span>→</span>
             </div>
@@ -2503,13 +2675,62 @@
         </div>
     </div>
 
-    <!-- NEW: Receipt/OCR Section -->
+    <!-- NEW: Debt/Hutang Section -->
+    <div class="content-section" id="debtSection">
+        <div class="debt-summary-card">
+            <div class="debt-summary-title">Total Piutang/Hutang</div>
+            <div class="debt-summary-amount" id="totalDebtAmount">Rp 0</div>
+            <div style="display: flex; gap: 20px; margin-top: 10px; font-size: 14px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span>👥</span>
+                    <span>Orang: <b id="totalDebtors">0</b></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span>📝</span>
+                    <span>Transaksi: <b id="totalDebtTransactions">0</b></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">💳 Daftar Hutang/Piutang</span>
+                <button class="btn-sm btn-primary-sm" onclick="app.openAddDebtModal()">+ Tambah</button>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Cari nama orang..." id="searchDebt" onkeyup="app.searchDebt()">
+                <button onclick="app.searchDebt()">🔍</button>
+            </div>
+
+            <div class="report-filters" style="margin-bottom: 15px;">
+                <button class="filter-btn active" onclick="app.setDebtFilter('all')">Semua</button>
+                <button class="filter-btn" onclick="app.setDebtFilter('unpaid')">Belum Lunas</button>
+                <button class="filter-btn" onclick="app.setDebtFilter('paid')">Sudah Lunas</button>
+            </div>
+
+            <div id="debtListContainer">
+                <!-- Debt persons will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt/OCR Section (MODIFIED: No auto transaction) -->
     <div class="content-section" id="receiptSection">
         <div class="card">
             <div class="card-header">
-                <span class="card-title">🧾 Struk Digital & OCR</span>
+                <span class="card-title">🧾 Pembuat Struk Manual</span>
             </div>
             
+            <div class="info-box" style="background: #fff8e1; border-left-color: #f57c00;">
+                <div class="info-title" style="color: #e65100;">📌 Catatan Penting</div>
+                <div class="info-text">
+                    Fitur ini hanya untuk <b>membuat struk/catatan</b> transaksi manual (Tarik Tunai, Top Up, Transfer). 
+                    <b>Tidak akan masuk ke laporan transaksi penjualan.</b> 
+                    Gunakan menu Kasir untuk mencatat penjualan yang masuk ke laporan.
+                </div>
+            </div>
+
             <div class="receipt-type-selector">
                 <button class="receipt-type-btn active" onclick="app.setReceiptType('tarik')" id="receiptTarik">
                     <div class="icon">🏧</div>
@@ -2525,17 +2746,10 @@
                 </button>
             </div>
 
-            <div class="info-box">
-                <div class="info-title">📸 Upload Bukti Transfer</div>
-                <div class="info-text">
-                    Upload screenshot bukti transfer dari bank/e-wallet. Sistem akan otomatis membaca detail transaksi.
-                </div>
-            </div>
-
             <div class="ocr-upload-area" id="ocrUploadArea" onclick="document.getElementById('ocrFileInput').click()">
                 <div class="ocr-upload-icon">📷</div>
-                <div class="ocr-upload-text">Tap untuk upload gambar</div>
-                <div class="ocr-upload-sub">Format: JPG, PNG, JPEG</div>
+                <div class="ocr-upload-text">Tap untuk upload bukti transfer</div>
+                <div class="ocr-upload-sub">Format: JPG, PNG, JPEG (OCR otomatis)</div>
             </div>
             
             <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="app.handleOCRUpload(this)">
@@ -2552,10 +2766,6 @@
                 <div class="ocr-result-title">📋 Hasil Pembacaan</div>
                 <div id="ocrResultContent"></div>
             </div>
-
-            <button class="btn btn-primary" onclick="app.processOCRResult()" id="btnProcessOCR" style="width: 100%; margin-top: 15px; display: none;">
-                ✅ Simpan ke Transaksi
-            </button>
         </div>
 
         <div class="card">
@@ -2611,9 +2821,14 @@
                 <label>No. Referensi</label>
                 <input type="text" id="manualRef" placeholder="Nomor referensi transaksi">
             </div>
+
+            <div class="form-group">
+                <label>Catatan Tambahan</label>
+                <textarea id="manualNote" rows="2" placeholder="Keterangan tambahan..."></textarea>
+            </div>
             
-            <button class="btn btn-success" onclick="app.saveManualReceipt()" style="width: 100%;">
-                💾 Simpan Struk
+            <button class="btn btn-primary" onclick="app.generateReceiptOnly()" style="width: 100%;">
+                🖨️ Cetak Struk Saja
             </button>
         </div>
     </div>
@@ -2686,12 +2901,16 @@
                     <b id="infoTransactionCount">0</b>
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                    <span>Total Hutang</span>
+                    <b id="infoDebtCount">0</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
                     <span>Status Cloud</span>
                     <b id="infoCloudStatus">Belum dikonfigurasi</b>
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0;">
                     <span>Versi Aplikasi</span>
-                    <b>Hifzi Cell 3.3 Cloud</b>
+                    <b>Hifzi Cell 3.4 Cloud</b>
                 </div>
             </div>
         </div>
@@ -2740,7 +2959,7 @@
         </div>
     </div>
 
-    <!-- Modal Awal Modal (NEW) -->
+    <!-- Modal Awal Modal -->
     <div class="modal" id="modalAwalModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2788,7 +3007,7 @@
         </div>
     </div>
 
-    <!-- Top Up Modal - Simplified (No Admin) -->
+    <!-- Top Up Modal -->
     <div class="modal" id="topUpModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2839,7 +3058,7 @@
         </div>
     </div>
 
-    <!-- Tarik Tunai Modal - Simplified (No Admin) -->
+    <!-- Tarik Tunai Modal -->
     <div class="modal" id="tarikTunaiModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2871,7 +3090,7 @@
         </div>
     </div>
 
-    <!-- Admin Fee Modal (New) - For Cashier -->
+    <!-- Admin Fee Modal -->
     <div class="modal" id="adminFeeModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2944,7 +3163,6 @@
                 <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="changeAmount">Rp 0</div>
             </div>
 
-            <!-- MODIFIED: Print checkbox tetap ada tapi tidak otomatis print -->
             <div class="checkbox-group" onclick="document.getElementById('autoPrint').click()">
                 <input type="checkbox" id="autoPrint">
                 <label for="autoPrint">🖨️ Cetak struk setelah pembayaran</label>
@@ -3075,7 +3293,7 @@
         </div>
     </div>
 
-    <!-- Batch Stock Modal (NEW) -->
+    <!-- Batch Stock Modal -->
     <div class="modal" id="batchStockModal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
@@ -3115,6 +3333,155 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="app.closeModal('batchStockModal')">Batal</button>
                 <button class="btn btn-success" onclick="app.saveBatchStock()" id="btnSaveBatch">💾 Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Manual Transaction Modal -->
+    <div class="modal" id="manualTransactionModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">📝 Transaksi Manual</span>
+                <button class="close-btn" onclick="app.closeModal('manualTransactionModal')">×</button>
+            </div>
+            
+            <div class="info-box" style="background: #e8f5e9; border-left-color: var(--success);">
+                <div class="info-title" style="color: #2e7d32;">📌 Produk Tidak Terdaftar</div>
+                <div class="info-text">
+                    Masukkan detail produk yang belum ada di daftar. Sistem akan menghitung laba otomatis.
+                </div>
+            </div>
+
+            <div id="manualItemsContainer">
+                <div class="manual-item-row" data-index="0">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Nama Barang</label>
+                        <input type="text" class="manual-item-name" placeholder="Nama produk">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Qty</label>
+                        <input type="number" class="manual-item-qty" value="1" min="1" inputmode="numeric">
+                    </div>
+                    <button class="btn btn-danger" onclick="app.removeManualItem(0)" style="display: none;">×</button>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top: 10px;">
+                <div class="form-group">
+                    <label>Harga Modal (Rp) <small style="font-weight: normal; color: #999;">per unit</small></label>
+                    <input type="number" id="manualCostPrice" placeholder="0" inputmode="numeric" onchange="app.calculateManualProfit()">
+                </div>
+                <div class="form-group">
+                    <label>Harga Jual (Rp) <small style="font-weight: normal; color: #999;">per unit</small></label>
+                    <input type="number" id="manualSellPrice" placeholder="0" inputmode="numeric" onchange="app.calculateManualProfit()">
+                </div>
+            </div>
+
+            <div class="calculation-box" style="background: #e3f2fd;">
+                <div class="calc-row">
+                    <span>Total Qty:</span>
+                    <span id="manualTotalQty">0</span>
+                </div>
+                <div class="calc-row">
+                    <span>Total Modal:</span>
+                    <span id="manualTotalCost">Rp 0</span>
+                </div>
+                <div class="calc-row">
+                    <span>Total Jual:</span>
+                    <span id="manualTotalSell">Rp 0</span>
+                </div>
+                <div class="calc-row" style="color: var(--success); font-size: 20px;">
+                    <span>Estimasi Laba:</span>
+                    <span id="manualTotalProfit">Rp 0</span>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="app.addManualItem()" style="width: 100%; margin-bottom: 15px;">
+                + Tambah Item Lain
+            </button>
+
+            <div class="form-group">
+                <label>Catatan (Opsional)</label>
+                <textarea id="manualTransactionNote" rows="2" placeholder="Keterangan tambahan..."></textarea>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('manualTransactionModal')">Batal</button>
+                <button class="btn btn-success" onclick="app.saveManualTransaction()" id="btnSaveManualTransaction">💾 Simpan Transaksi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Add Debt Modal -->
+    <div class="modal" id="addDebtModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">💳 Tambah Hutang/Piutang</span>
+                <button class="close-btn" onclick="app.closeModal('addDebtModal')">×</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Nama Orang <span style="color: var(--danger);">*</span></label>
+                <input type="text" id="debtPersonName" placeholder="Nama peminjam/berhutang" list="debtPersonList">
+                <datalist id="debtPersonList"></datalist>
+                <small style="color: #999; font-size: 11px;">Jika nama sudah ada, akan ditambahkan ke daftar hutang orang tersebut</small>
+            </div>
+
+            <div class="form-group">
+                <label>Jumlah Hutang (Rp) <span style="color: var(--danger);">*</span></label>
+                <input type="number" id="debtAmount" placeholder="0" inputmode="numeric">
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan/Detail</label>
+                <input type="text" id="debtDescription" placeholder="Contoh: Beli pulsa 50k, servis hp, dll">
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Jatuh Tempo (Opsional)</label>
+                <input type="date" id="debtDueDate">
+            </div>
+
+            <div class="form-group">
+                <label>No. Telepon (Opsional)</label>
+                <input type="tel" id="debtPhone" placeholder="Nomor HP untuk kontak">
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('addDebtModal')">Batal</button>
+                <button class="btn btn-primary" onclick="app.saveDebt()" id="btnSaveDebt">Simpan Hutang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Pay Debt Modal -->
+    <div class="modal" id="payDebtModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">💰 Pembayaran Hutang</span>
+                <button class="close-btn" onclick="app.closeModal('payDebtModal')">×</button>
+            </div>
+            
+            <div id="payDebtContent">
+                <!-- Content rendered dynamically -->
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('payDebtModal')">Batal</button>
+                <button class="btn btn-success" onclick="app.confirmPayDebt()" id="btnConfirmPayDebt">Bayar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Debt History Modal -->
+    <div class="modal" id="debtHistoryModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">📋 Riwayat Hutang</span>
+                <button class="close-btn" onclick="app.closeModal('debtHistoryModal')">×</button>
+            </div>
+            <div id="debtHistoryContent" style="max-height: 60vh; overflow-y: auto;">
+                <!-- Content rendered dynamically -->
             </div>
         </div>
     </div>
@@ -3289,7 +3656,7 @@
         </div>
     </div>
 
-    <!-- NEW: Delete Transaction Modal (Permanent) -->
+    <!-- Delete Transaction Modal -->
     <div class="modal" id="deleteTransactionModal">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header">
@@ -3383,6 +3750,7 @@
                 products: [],
                 transactions: [],
                 cashTransactions: [],
+                debts: [], // NEW: Debt data
                 settings: {
                     storeName: 'Hifzi Cell',
                     address: '',
@@ -3414,7 +3782,6 @@
             isOnline: false,
             lastSync: null,
 
-            // NEW: Touch handling state
             touchState: {
                 startX: 0,
                 startY: 0,
@@ -3423,19 +3790,16 @@
                 lastTap: 0
             },
 
-            // NEW: Batch stock state
-            batchStockMode: 'set', // 'set' or 'add'
+            batchStockMode: 'set',
             batchStockData: {},
-
-            // NEW: Category scroll position
             categoryScrollPosition: 0,
-
-            // NEW: OCR state
             ocrData: null,
             receiptType: 'tarik',
-
-            // NEW: Save operation lock
             isSaving: false,
+
+            // NEW: Debt state
+            debtFilter: 'all',
+            currentDebtPerson: null,
 
             init() {
                 console.log('Initializing Hifzi Cell...');
@@ -3449,6 +3813,7 @@
                 this.startShiftTimer();
                 this.initCloudSync();
                 this.setupScrollHint();
+                this.updateDebtSummary(); // NEW
                 
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('startDate').value = today;
@@ -3462,7 +3827,6 @@
                 
                 document.getElementById('storeName').textContent = this.data.settings.storeName;
                 
-                // Load cloud config
                 const savedUrl = localStorage.getItem('hifzi_cloud_url');
                 if (savedUrl) {
                     CONFIG.GOOGLE_SCRIPT_URL = savedUrl;
@@ -3473,13 +3837,11 @@
                 console.log('Hifzi Cell initialized successfully');
             },
 
-            // NEW: Setup scroll hint for categories
             setupScrollHint() {
                 const pillsContainer = document.getElementById('categoryPills');
                 const hint = document.getElementById('scrollHint');
                 
                 if (pillsContainer && hint) {
-                    // Show hint if content is scrollable
                     const checkScrollable = () => {
                         if (pillsContainer.scrollWidth > pillsContainer.clientWidth) {
                             hint.style.display = 'flex';
@@ -3488,11 +3850,9 @@
                         }
                     };
                     
-                    // Check on init and window resize
                     checkScrollable();
                     window.addEventListener('resize', checkScrollable);
                     
-                    // Hide hint after user scrolls
                     pillsContainer.addEventListener('scroll', () => {
                         if (pillsContainer.scrollLeft > 20) {
                             pillsContainer.classList.add('scrolled');
@@ -3500,7 +3860,6 @@
                             pillsContainer.classList.remove('scrolled');
                         }
                         
-                        // Hide hint after scrolling
                         setTimeout(() => {
                             hint.style.opacity = '0';
                         }, 3000);
@@ -3538,7 +3897,6 @@
                     });
                 }
 
-                // Prevent double-tap zoom
                 let lastTouchEnd = 0;
                 document.addEventListener('touchend', (e) => {
                     const now = Date.now();
@@ -3548,13 +3906,11 @@
                     lastTouchEnd = now;
                 }, false);
 
-                // Modal Awal input listener for real-time calculation
                 const modalAwalInput = document.getElementById('modalAwalInput');
                 if (modalAwalInput) {
                     modalAwalInput.addEventListener('input', () => this.updateModalAwalPreview());
                 }
 
-                // OCR drag and drop
                 const ocrUploadArea = document.getElementById('ocrUploadArea');
                 if (ocrUploadArea) {
                     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -3584,9 +3940,17 @@
                         }
                     }, false);
                 }
+
+                // NEW: Manual transaction inputs
+                document.addEventListener('input', (e) => {
+                    if (e.target.classList.contains('manual-item-name') || 
+                        e.target.classList.contains('manual-item-qty')) {
+                        this.calculateManualProfit();
+                    }
+                });
             },
 
-            // ==================== MODAL AWAL (NEW) ====================
+            // ==================== MODAL AWAL ====================
             openModalAwalModal() {
                 document.getElementById('modalAwalInput').value = '';
                 document.getElementById('modalAwalNote').value = '';
@@ -3619,11 +3983,9 @@
                 this.isSaving = true;
 
                 try {
-                    // Update settings
                     this.data.settings.modalAwal = amount;
                     this.data.settings.currentCash += amount;
 
-                    // Record in cash transactions
                     this.data.cashTransactions.push({
                         id: Date.now(),
                         date: new Date().toISOString(),
@@ -3633,7 +3995,6 @@
                         note: note
                     });
 
-                    // Update shift data
                     this.data.shift.modalAwal = amount;
 
                     await this.saveDataAsync();
@@ -3649,12 +4010,11 @@
                 }
             },
 
-            // ==================== BATCH STOCK UPDATE (NEW) ====================
+            // ==================== BATCH STOCK UPDATE ====================
             openStockModal() {
                 this.batchStockMode = 'set';
                 this.batchStockData = {};
                 
-                // Populate category filter
                 const catSelect = document.getElementById('batchStockCategory');
                 catSelect.innerHTML = '<option value="all">Semua Kategori</option>';
                 this.data.categories.filter(c => c.id !== 'all').forEach(cat => {
@@ -3675,7 +4035,6 @@
             setBatchMode(mode) {
                 this.batchStockMode = mode;
                 
-                // Update button styles
                 document.querySelectorAll('.batch-actions button').forEach(btn => {
                     btn.style.opacity = '0.6';
                 });
@@ -3701,7 +4060,6 @@
                     filtered = filtered.filter(p => p.category === filterCat);
                 }
                 
-                // Sort by name
                 filtered.sort((a, b) => a.name.localeCompare(b.name));
                 
                 container.innerHTML = '';
@@ -3737,7 +4095,6 @@
                     container.appendChild(item);
                 });
                 
-                // Update count of items with values
                 const filledCount = Object.keys(this.batchStockData).length;
                 document.getElementById('batchTotalProducts').textContent = filledCount;
             },
@@ -3751,7 +4108,6 @@
                     this.batchStockData[productId] = numValue;
                 }
                 
-                // Update count
                 const filledCount = Object.keys(this.batchStockData).length;
                 document.getElementById('batchTotalProducts').textContent = filledCount;
             },
@@ -3778,10 +4134,8 @@
                             const newValue = this.batchStockData[productId];
                             
                             if (this.batchStockMode === 'set') {
-                                // Set mode: replace stock
                                 product.stock = newValue;
                             } else {
-                                // Add mode: add to existing
                                 product.stock = (product.stock || 0) + newValue;
                             }
                             
@@ -3792,11 +4146,9 @@
                     await this.saveDataAsync();
                     this.closeModal('batchStockModal');
                     
-                    // Refresh displays
                     this.renderProducts();
                     this.renderProductList();
                     
-                    // Sync to cloud if online
                     if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
                         this.syncToCloud();
                     }
@@ -3859,7 +4211,6 @@
                 }
             },
 
-            // FIXED: Include settings (kas) in cloud sync
             async syncToCloud() {
                 if (!CONFIG.GOOGLE_SCRIPT_URL) {
                     this.showToast('Cloud belum dikonfigurasi!');
@@ -3869,12 +4220,12 @@
                 this.updateSyncStatus('syncing');
                 
                 try {
-                    // Include ALL data including settings
                     const syncData = {
                         action: 'syncAll',
                         products: this.data.products,
                         transactions: this.data.transactions,
                         cashTransactions: this.data.cashTransactions,
+                        debts: this.data.debts, // NEW: Include debts
                         settings: this.data.settings,
                         categories: this.data.categories,
                         shift: this.data.shift,
@@ -3898,7 +4249,6 @@
                 }
             },
 
-            // FIXED: Download settings (kas) from cloud
             async syncFromCloud() {
                 if (!CONFIG.GOOGLE_SCRIPT_URL) {
                     this.showToast('Cloud belum dikonfigurasi!');
@@ -3913,7 +4263,6 @@
                     
                     console.log('Received from cloud:', cloudData);
                     
-                    // Merge cloud data with local data
                     if (cloudData.products) {
                         this.data.products = cloudData.products;
                     }
@@ -3923,11 +4272,13 @@
                     if (cloudData.cashTransactions) {
                         this.data.cashTransactions = cloudData.cashTransactions;
                     }
+                    if (cloudData.debts) { // NEW: Restore debts
+                        this.data.debts = cloudData.debts;
+                    }
                     if (cloudData.categories) {
                         this.data.categories = cloudData.categories;
                     }
                     
-                    // IMPORTANT: Restore settings including kas
                     if (cloudData.settings) {
                         this.data.settings = {
                             ...this.data.settings,
@@ -3942,13 +4293,13 @@
                     
                     await this.saveDataAsync();
                     
-                    // Update all displays
                     this.renderCategories();
                     this.renderProducts();
                     this.renderProductList();
                     this.updateCashDisplay();
                     this.updateStats();
                     this.updateShiftDisplay();
+                    this.updateDebtSummary(); // NEW
                     
                     this.lastSync = new Date();
                     this.updateSyncStatus('online');
@@ -3960,21 +4311,18 @@
                 }
             },
 
-            // ==================== FIXED: CLOUD CONFIG ====================
             openCloudConfig() {
                 console.log('Opening cloud config modal...');
                 
                 const urlInput = document.getElementById('googleScriptUrl');
                 const sheetInput = document.getElementById('spreadsheetId');
                 
-                // Get from localStorage
                 const savedUrl = localStorage.getItem('hifzi_cloud_url');
                 const savedSheetId = localStorage.getItem('hifzi_sheet_id');
                 
                 console.log('Saved URL:', savedUrl);
                 console.log('Saved Sheet ID:', savedSheetId);
                 
-                // Set values (use empty string if null/undefined)
                 if (urlInput) {
                     urlInput.value = savedUrl || '';
                     console.log('Set URL input to:', urlInput.value);
@@ -4018,7 +4366,6 @@
                 this.isSaving = true;
 
                 try {
-                    // Save to localStorage
                     try {
                         localStorage.setItem('hifzi_cloud_url', url);
                         if (sheetId) {
@@ -4031,16 +4378,13 @@
                         return;
                     }
                     
-                    // Update CONFIG
                     CONFIG.GOOGLE_SCRIPT_URL = url;
                     
-                    // Update display
                     const statusEl = document.getElementById('infoCloudStatus');
                     if (statusEl) {
                         statusEl.textContent = 'Terkonfigurasi';
                     }
                     
-                    // Test connection
                     await this.checkCloudConnection();
                     
                     this.closeModal('cloudConfigModal');
@@ -4074,7 +4418,6 @@
                     this.renderCategoryFolders(container);
                 }
                 
-                // Re-setup scroll hint after rendering
                 setTimeout(() => this.setupScrollHint(), 100);
             },
 
@@ -4087,12 +4430,10 @@
                     btn.className = `pill ${this.currentCategory === cat.id ? 'active' : ''} ${this.deleteMode && cat.id !== 'all' ? 'delete-mode' : ''}`;
                     btn.textContent = cat.name;
                     
-                    // IMPROVED: Better touch handling with debounce
                     const handleTap = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        // Prevent double firing
                         const now = Date.now();
                         if (now - this.touchState.lastTap < 300) return;
                         this.touchState.lastTap = now;
@@ -4115,7 +4456,6 @@
                         const diffY = Math.abs(e.changedTouches[0].clientY - this.touchState.startY);
                         const diffTime = Date.now() - this.touchState.startTime;
                         
-                        // Only trigger if not scrolling and quick tap
                         if (diffX < 10 && diffY < 10 && diffTime < 200) {
                             handleTap(e);
                         }
@@ -4126,12 +4466,10 @@
                     pillsContainer.appendChild(btn);
                 });
 
-                // FIX #3: Restore scroll position after rendering
                 setTimeout(() => {
                     pillsContainer.scrollLeft = this.categoryScrollPosition;
                 }, 10);
 
-                // Save scroll position
                 pillsContainer.addEventListener('scroll', () => {
                     this.categoryScrollPosition = pillsContainer.scrollLeft;
                 }, { passive: true });
@@ -4252,7 +4590,6 @@
             },
 
             // ==================== DATA MANAGEMENT ====================
-            // FIX #1: Async save with loading state to prevent double input
             async saveDataAsync() {
                 return new Promise((resolve) => {
                     try {
@@ -4271,7 +4608,6 @@
                 this.saveDataAsync();
             },
 
-            // FIX #1: Loading overlay management
             setLoading(show, modalId = null) {
                 const overlay = document.getElementById('loadingOverlay');
                 if (show) {
@@ -4294,6 +4630,7 @@
                         this.data = { ...this.data, ...parsed };
                         if (!this.data.shift) this.data.shift = { active: false, startTime: null, modalAwal: 0 };
                         if (!this.data.settings) this.data.settings = { storeName: 'Hifzi Cell', address: '', taxRate: 0, modalAwal: 0, currentCash: 0 };
+                        if (!this.data.debts) this.data.debts = []; // NEW: Initialize debts if not exists
                     }
                 } catch (e) {
                     console.error('Error loading data:', e);
@@ -4405,6 +4742,8 @@
                     this.renderTransactionList();
                 } else if (tab === 'receipt') {
                     this.initReceiptSection();
+                } else if (tab === 'debt') { // NEW
+                    this.renderDebtList();
                 }
                 
                 const cartBar = document.getElementById('cartBar');
@@ -4774,20 +5113,16 @@
                         ${inCart ? `<div style="margin-top: 5px; color: var(--primary); font-weight: 600;">${inCart.qty} di keranjang</div>` : ''}
                     `;
                     
-                    // IMPROVED: Better touch handling with debounce and visual feedback
                     const handleTap = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        // Prevent double tap
                         const now = Date.now();
                         if (now - this.touchState.lastTap < 400) return;
                         this.touchState.lastTap = now;
                         
-                        // Prevent if already adding
                         if (card.classList.contains('adding')) return;
                         
-                        // Visual feedback
                         card.classList.add('adding');
                         card.style.transform = 'scale(0.95)';
                         
@@ -4799,7 +5134,6 @@
                         this.addToCart(product);
                     };
                     
-                    // Touch events with scroll detection
                     card.addEventListener('touchstart', (e) => {
                         this.touchState.startX = e.touches[0].clientX;
                         this.touchState.startY = e.touches[0].clientY;
@@ -4811,7 +5145,6 @@
                         const diffY = Math.abs(e.changedTouches[0].clientY - this.touchState.startY);
                         const diffTime = Date.now() - this.touchState.startTime;
                         
-                        // Only trigger if not scrolling (small movement) and quick tap
                         if (diffX < 10 && diffY < 10 && diffTime < 250) {
                             handleTap(e);
                         }
@@ -4934,6 +5267,208 @@
                 return cat ? cat.name : '-';
             },
 
+            // ==================== NEW: MANUAL TRANSACTION ====================
+            openManualTransactionModal() {
+                // Reset form
+                document.getElementById('manualItemsContainer').innerHTML = `
+                    <div class="manual-item-row" data-index="0">
+                        <div class="form-group" style="flex: 2;">
+                            <label>Nama Barang</label>
+                            <input type="text" class="manual-item-name" placeholder="Nama produk">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Qty</label>
+                            <input type="number" class="manual-item-qty" value="1" min="1" inputmode="numeric">
+                        </div>
+                        <button class="btn btn-danger" onclick="app.removeManualItem(0)" style="display: none;">×</button>
+                    </div>
+                `;
+                document.getElementById('manualCostPrice').value = '';
+                document.getElementById('manualSellPrice').value = '';
+                document.getElementById('manualTransactionNote').value = '';
+                this.calculateManualProfit();
+                
+                this.openModal('manualTransactionModal');
+            },
+
+            addManualItem() {
+                const container = document.getElementById('manualItemsContainer');
+                const index = container.children.length;
+                
+                const row = document.createElement('div');
+                row.className = 'manual-item-row';
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <div class="form-group" style="flex: 2;">
+                        <label>Nama Barang</label>
+                        <input type="text" class="manual-item-name" placeholder="Nama produk">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Qty</label>
+                        <input type="number" class="manual-item-qty" value="1" min="1" inputmode="numeric">
+                    </div>
+                    <button class="btn btn-danger" onclick="app.removeManualItem(${index})">×</button>
+                `;
+                
+                container.appendChild(row);
+                
+                // Show delete button on first item if there are multiple items
+                if (container.children.length > 1) {
+                    container.querySelector('.manual-item-row:first-child .btn-danger').style.display = 'flex';
+                }
+                
+                this.calculateManualProfit();
+            },
+
+            removeManualItem(index) {
+                const container = document.getElementById('manualItemsContainer');
+                if (container.children.length <= 1) {
+                    this.showToast('Minimal harus ada 1 item!');
+                    return;
+                }
+                
+                const row = container.querySelector(`[data-index="${index}"]`);
+                if (row) {
+                    row.remove();
+                    // Reindex
+                    Array.from(container.children).forEach((child, idx) => {
+                        child.dataset.index = idx;
+                        const btn = child.querySelector('.btn-danger');
+                        if (btn) {
+                            btn.setAttribute('onclick', `app.removeManualItem(${idx})`);
+                            if (container.children.length === 1) {
+                                btn.style.display = 'none';
+                            }
+                        }
+                    });
+                }
+                
+                this.calculateManualProfit();
+            },
+
+            calculateManualProfit() {
+                const rows = document.querySelectorAll('.manual-item-row');
+                let totalQty = 0;
+                
+                rows.forEach(row => {
+                    const qty = parseInt(row.querySelector('.manual-item-qty').value) || 0;
+                    totalQty += qty;
+                });
+                
+                const costPrice = parseInt(document.getElementById('manualCostPrice').value) || 0;
+                const sellPrice = parseInt(document.getElementById('manualSellPrice').value) || 0;
+                
+                const totalCost = totalQty * costPrice;
+                const totalSell = totalQty * sellPrice;
+                const totalProfit = totalSell - totalCost;
+                
+                document.getElementById('manualTotalQty').textContent = totalQty;
+                document.getElementById('manualTotalCost').textContent = 'Rp ' + this.formatNumber(totalCost);
+                document.getElementById('manualTotalSell').textContent = 'Rp ' + this.formatNumber(totalSell);
+                document.getElementById('manualTotalProfit').textContent = 'Rp ' + this.formatNumber(totalProfit);
+                
+                return { totalQty, totalCost, totalSell, totalProfit };
+            },
+
+            async saveManualTransaction() {
+                if (this.isSaving) return;
+                
+                const rows = document.querySelectorAll('.manual-item-row');
+                const items = [];
+                let hasEmptyName = false;
+                
+                rows.forEach(row => {
+                    const name = row.querySelector('.manual-item-name').value.trim();
+                    const qty = parseInt(row.querySelector('.manual-item-qty').value) || 0;
+                    
+                    if (!name) hasEmptyName = true;
+                    
+                    items.push({
+                        name: name || 'Produk Tidak Terdaftar',
+                        qty: qty,
+                        price: 0, // Will be set from sell price
+                        cost: 0   // Will be set from cost price
+                    });
+                });
+                
+                if (hasEmptyName) {
+                    this.showToast('Nama barang tidak boleh kosong!');
+                    return;
+                }
+                
+                const costPrice = parseInt(document.getElementById('manualCostPrice').value) || 0;
+                const sellPrice = parseInt(document.getElementById('manualSellPrice').value) || 0;
+                const note = document.getElementById('manualTransactionNote').value;
+                
+                if (sellPrice <= 0) {
+                    this.showToast('Harga jual harus lebih dari 0!');
+                    return;
+                }
+                
+                // Update items with prices
+                items.forEach(item => {
+                    item.price = sellPrice;
+                    item.cost = costPrice;
+                });
+                
+                const { totalQty, totalCost, totalSell, totalProfit } = this.calculateManualProfit();
+                
+                this.setLoading(true, 'manualTransactionModal');
+                this.isSaving = true;
+
+                try {
+                    const transaction = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        items: items,
+                        total: totalSell,
+                        profit: totalProfit,
+                        paymentMethod: 'cash',
+                        received: totalSell,
+                        change: 0,
+                        status: 'completed',
+                        transactionNumber: 'MANUAL-' + Date.now().toString().slice(-8),
+                        type: 'manual_transaction',
+                        note: note || 'Transaksi manual (produk tidak terdaftar)',
+                        manualData: {
+                            costPrice: costPrice,
+                            sellPrice: sellPrice,
+                            totalQty: totalQty
+                        }
+                    };
+                    
+                    this.data.transactions.push(transaction);
+                    this.data.settings.currentCash += totalSell;
+                    
+                    await this.saveDataAsync();
+                    
+                    // Sync to cloud
+                    if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                        try {
+                            await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    action: 'addTransaction',
+                                    transaction: transaction,
+                                    settings: this.data.settings
+                                })
+                            });
+                        } catch (e) {
+                            console.error('Failed to sync transaction:', e);
+                        }
+                    }
+                    
+                    this.closeModal('manualTransactionModal');
+                    this.updateCashDisplay();
+                    this.updateStats();
+                    
+                    this.showToast(`Transaksi manual tersimpan! Laba: Rp ${this.formatNumber(totalProfit)}`);
+                } finally {
+                    this.setLoading(false, 'manualTransactionModal');
+                    this.isSaving = false;
+                }
+            },
+
             // ==================== CART & CHECKOUT ====================
             addToCart(product) {
                 const existing = this.cart.find(c => c.id === product.id);
@@ -5052,8 +5587,6 @@
                 document.getElementById('checkoutTotal').textContent = 'Rp ' + this.formatNumber(total);
                 document.getElementById('cashReceived').value = '';
                 document.getElementById('changeGroup').style.display = 'none';
-                
-                // FIX #5: Print checkbox tidak otomatis tercentang
                 document.getElementById('autoPrint').checked = false;
                 
                 this.openModal('checkoutModal');
@@ -5086,7 +5619,6 @@
                 }
             },
 
-            // FIX #5: Optional print - checkbox tidak otomatis tercentang
             async processPayment() {
                 if (this.isSaving) return;
                 
@@ -5128,7 +5660,6 @@
                     
                     await this.saveDataAsync();
                     
-                    // Sync to cloud
                     if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
                         try {
                             await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
@@ -5136,7 +5667,7 @@
                                 body: JSON.stringify({
                                     action: 'addTransaction',
                                     transaction: transaction,
-                                    settings: this.data.settings // Sync kas update
+                                    settings: this.data.settings
                                 })
                             });
                         } catch (e) {
@@ -5144,7 +5675,6 @@
                         }
                     }
                     
-                    // Only print if checkbox is checked
                     if (shouldPrint) {
                         this.printReceipt(transaction);
                     }
@@ -5276,7 +5806,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 }
             },
 
-            // Simplified Top Up - No Admin
             openTopUpModal() {
                 document.getElementById('topUpNominal').value = '';
                 document.getElementById('topUpTarget').value = '';
@@ -5331,7 +5860,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 }
             },
 
-            // Simplified Tarik Tunai - No Admin
             openTarikTunaiModal() {
                 document.getElementById('tarikNominal').value = '';
                 document.getElementById('tarikNote').value = '';
@@ -5388,7 +5916,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 }
             },
 
-            // Admin Fee Modal (New)
             openAdminFeeModal(type, subType = '') {
                 document.getElementById('adminFeeType').value = type === 'topup' ? 'topup_admin' : 'tarik_admin';
                 document.getElementById('adminFeeAmount').value = '';
@@ -5616,7 +6143,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         break;
                 }
                 
-                // FIX #2: Exclude deleted transactions from reports
                 const filtered = this.data.transactions.filter(t => {
                     const tDate = new Date(t.date);
                     return tDate >= startDate && tDate <= endDate && t.status !== 'deleted';
@@ -5710,7 +6236,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 } else if (this.transactionFilter === 'deleted') {
                     filtered = filtered.filter(t => t.status === 'deleted');
                 } else {
-                    // Default: show all except deleted unless specifically filtered
                     filtered = filtered.filter(t => t.status !== 'deleted');
                 }
                 
@@ -6174,7 +6699,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.viewTransactionDetail(transactionId);
             },
 
-            // FIX #2: New permanent delete feature
             openDeleteModal(transactionId) {
                 const t = this.data.transactions.find(tr => tr.id === transactionId);
                 if (!t) return;
@@ -6217,7 +6741,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 this.isSaving = true;
 
                 try {
-                    // If transaction was not voided, return stock and adjust cash
                     if (this.currentTransaction.status !== 'voided') {
                         this.currentTransaction.items.forEach(item => {
                             const product = this.data.products.find(p => p.id === item.id);
@@ -6226,11 +6749,9 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         });
                         
-                        // Subtract from cash (remove the transaction from totals)
                         this.data.settings.currentCash -= this.currentTransaction.total;
                     }
                     
-                    // Mark as deleted permanently
                     this.currentTransaction.status = 'deleted';
                     this.currentTransaction.deleteInfo = {
                         reason: reason,
@@ -6410,14 +6931,390 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 }
             },
 
-            // ==================== NEW: OCR RECEIPT FEATURE ====================
+            // ==================== NEW: DEBT/HUTANG FEATURE ====================
+            updateDebtSummary() {
+                const totalDebt = this.data.debts.reduce((sum, d) => sum + (d.remaining || d.amount), 0);
+                const totalDebtors = new Set(this.data.debts.filter(d => (d.remaining || d.amount) > 0).map(d => d.personName)).size;
+                const totalTransactions = this.data.debts.length;
+                
+                document.getElementById('totalDebtAmount').textContent = 'Rp ' + this.formatNumber(totalDebt);
+                document.getElementById('totalDebtors').textContent = totalDebtors;
+                document.getElementById('totalDebtTransactions').textContent = totalTransactions;
+            },
+
+            setDebtFilter(filter) {
+                this.debtFilter = filter;
+                
+                document.querySelectorAll('#debtSection .filter-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                this.renderDebtList();
+            },
+
+            searchDebt() {
+                this.renderDebtList();
+            },
+
+            renderDebtList() {
+                const container = document.getElementById('debtListContainer');
+                const searchInput = document.getElementById('searchDebt');
+                const search = searchInput ? searchInput.value.toLowerCase() : '';
+                
+                // Group debts by person
+                const personDebts = {};
+                
+                this.data.debts.forEach(debt => {
+                    const remaining = debt.remaining !== undefined ? debt.remaining : debt.amount;
+                    
+                    if (this.debtFilter === 'paid' && remaining > 0) return;
+                    if (this.debtFilter === 'unpaid' && remaining === 0) return;
+                    
+                    if (search && !debt.personName.toLowerCase().includes(search)) return;
+                    
+                    if (!personDebts[debt.personName]) {
+                        personDebts[debt.personName] = {
+                            name: debt.personName,
+                            phone: debt.phone || '',
+                            totalDebt: 0,
+                            totalPaid: 0,
+                            items: []
+                        };
+                    }
+                    
+                    personDebts[debt.personName].totalDebt += debt.amount;
+                    personDebts[debt.personName].totalPaid += (debt.amount - remaining);
+                    personDebts[debt.personName].items.push(debt);
+                });
+                
+                container.innerHTML = '';
+                
+                const persons = Object.values(personDebts).sort((a, b) => (b.totalDebt - b.totalPaid) - (a.totalDebt - a.totalPaid));
+                
+                if (persons.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">💳</div>
+                            <p>Tidak ada data hutang</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                persons.forEach(person => {
+                    const remaining = person.totalDebt - person.totalPaid;
+                    const isPaid = remaining === 0;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'debt-person-card';
+                    if (isPaid) {
+                        card.style.borderLeftColor = 'var(--success)';
+                        card.style.opacity = '0.8';
+                    }
+                    
+                    const unpaidItems = person.items.filter(i => (i.remaining || i.amount) > 0);
+                    
+                    card.innerHTML = `
+                        <div class="debt-person-header">
+                            <div class="debt-person-name">
+                                👤 ${person.name}
+                                ${isPaid ? '<span class="debt-badge paid">LUNAS</span>' : '<span class="debt-badge">BELUM LUNAS</span>'}
+                            </div>
+                            <div class="debt-person-total" style="${isPaid ? 'color: var(--success);' : ''}">
+                                Rp ${this.formatNumber(remaining)}
+                            </div>
+                        </div>
+                        <div class="debt-person-meta">
+                            Total: Rp ${this.formatNumber(person.totalDebt)} | 
+                            Dibayar: Rp ${this.formatNumber(person.totalPaid)} | 
+                            ${person.items.length} transaksi
+                            ${person.phone ? `| 📞 ${person.phone}` : ''}
+                        </div>
+                        <div class="debt-actions">
+                            ${!isPaid ? `
+                                <button class="debt-btn pay" onclick="app.openPayDebtModal('${person.name}')">💰 Bayar</button>
+                                <button class="debt-btn add" onclick="app.openAddDebtModal('${person.name}')">➕ Tambah</button>
+                            ` : ''}
+                            <button class="debt-btn history" onclick="app.openDebtHistoryModal('${person.name}')">📋 Detail</button>
+                        </div>
+                        ${unpaidItems.length > 0 ? `
+                            <div class="debt-item-list">
+                                ${unpaidItems.slice(0, 3).map(item => `
+                                    <div class="debt-item">
+                                        <span class="debt-item-name">${item.description || 'Tidak ada keterangan'}</span>
+                                        <span class="debt-item-amount">Rp ${this.formatNumber(item.remaining || item.amount)}</span>
+                                    </div>
+                                `).join('')}
+                                ${unpaidItems.length > 3 ? `<div style="text-align: center; color: #999; font-size: 12px; margin-top: 5px;">... dan ${unpaidItems.length - 3} lainnya</div>` : ''}
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            },
+
+            openAddDebtModal(existingName = '') {
+                // Update datalist with existing names
+                const datalist = document.getElementById('debtPersonList');
+                datalist.innerHTML = '';
+                const uniqueNames = [...new Set(this.data.debts.map(d => d.personName))];
+                uniqueNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    datalist.appendChild(option);
+                });
+                
+                document.getElementById('debtPersonName').value = existingName;
+                document.getElementById('debtAmount').value = '';
+                document.getElementById('debtDescription').value = '';
+                document.getElementById('debtDueDate').value = '';
+                document.getElementById('debtPhone').value = '';
+                
+                this.openModal('addDebtModal');
+            },
+
+            async saveDebt() {
+                if (this.isSaving) return;
+                
+                const personName = document.getElementById('debtPersonName').value.trim();
+                const amount = parseInt(document.getElementById('debtAmount').value) || 0;
+                const description = document.getElementById('debtDescription').value.trim();
+                const dueDate = document.getElementById('debtDueDate').value;
+                const phone = document.getElementById('debtPhone').value.trim();
+                
+                if (!personName) {
+                    this.showToast('Nama orang wajib diisi!');
+                    return;
+                }
+                
+                if (amount <= 0) {
+                    this.showToast('Jumlah hutang harus lebih dari 0!');
+                    return;
+                }
+                
+                this.setLoading(true, 'addDebtModal');
+                this.isSaving = true;
+
+                try {
+                    const debt = {
+                        id: Date.now(),
+                        personName: personName,
+                        amount: amount,
+                        remaining: amount,
+                        description: description,
+                        dueDate: dueDate || null,
+                        phone: phone,
+                        date: new Date().toISOString(),
+                        payments: []
+                    };
+                    
+                    this.data.debts.push(debt);
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('addDebtModal');
+                    this.updateDebtSummary();
+                    this.renderDebtList();
+                    
+                    this.showToast(`Hutang Rp ${this.formatNumber(amount)} untuk ${personName} tersimpan!`);
+                    
+                    if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                        this.syncToCloud();
+                    }
+                } finally {
+                    this.setLoading(false, 'addDebtModal');
+                    this.isSaving = false;
+                }
+            },
+
+            openPayDebtModal(personName) {
+                const personDebts = this.data.debts.filter(d => 
+                    d.personName === personName && (d.remaining || d.amount) > 0
+                );
+                
+                if (personDebts.length === 0) {
+                    this.showToast('Tidak ada hutang yang perlu dibayar!');
+                    return;
+                }
+                
+                const totalRemaining = personDebts.reduce((sum, d) => sum + (d.remaining || d.amount), 0);
+                
+                const content = document.getElementById('payDebtContent');
+                content.innerHTML = `
+                    <div class="info-box" style="background: #e8f5e9; border-left-color: var(--success);">
+                        <div class="info-title" style="color: #2e7d32;">💰 Pembayaran untuk ${personName}</div>
+                        <div class="info-text">
+                            Total sisa hutang: <b>Rp ${this.formatNumber(totalRemaining)}</b>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Jumlah Pembayaran (Rp)</label>
+                        <input type="number" id="payAmount" placeholder="0" value="${totalRemaining}" inputmode="numeric">
+                        <small style="color: #999; font-size: 11px;">Maksimal: Rp ${this.formatNumber(totalRemaining)}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Catatan Pembayaran</label>
+                        <textarea id="payNote" rows="2" placeholder="Keterangan pembayaran..."></textarea>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin-top: 15px;">
+                        <div style="font-weight: 700; margin-bottom: 10px; color: #666; font-size: 12px;">RINCIAN HUTANG</div>
+                        ${personDebts.map(d => `
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                                <div>
+                                    <div style="font-size: 13px;">${d.description || 'Tidak ada keterangan'}</div>
+                                    <div style="font-size: 11px; color: #999;">${new Date(d.date).toLocaleDateString('id-ID')}</div>
+                                </div>
+                                <div style="font-weight: 600; color: var(--danger);">
+                                    Rp ${this.formatNumber(d.remaining || d.amount)}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                this.currentDebtPerson = personName;
+                this.openModal('payDebtModal');
+            },
+
+            async confirmPayDebt() {
+                if (this.isSaving) return;
+                
+                const amount = parseInt(document.getElementById('payAmount').value) || 0;
+                const note = document.getElementById('payNote').value;
+                
+                if (amount <= 0) {
+                    this.showToast('Jumlah pembayaran harus lebih dari 0!');
+                    return;
+                }
+                
+                const personDebts = this.data.debts.filter(d => 
+                    d.personName === this.currentDebtPerson && (d.remaining || d.amount) > 0
+                ).sort((a, b) => new Date(a.date) - new Date(b.date)); // Oldest first
+                
+                const totalRemaining = personDebts.reduce((sum, d) => sum + (d.remaining || d.amount), 0);
+                
+                if (amount > totalRemaining) {
+                    this.showToast(`Pembayaran melebihi total hutang! Maksimal: Rp ${this.formatNumber(totalRemaining)}`);
+                    return;
+                }
+                
+                this.setLoading(true, 'payDebtModal');
+                this.isSaving = true;
+
+                try {
+                    let remainingPayment = amount;
+                    
+                    for (const debt of personDebts) {
+                        if (remainingPayment <= 0) break;
+                        
+                        const debtRemaining = debt.remaining !== undefined ? debt.remaining : debt.amount;
+                        const paymentForThis = Math.min(remainingPayment, debtRemaining);
+                        
+                        debt.remaining = debtRemaining - paymentForThis;
+                        
+                        if (!debt.payments) debt.payments = [];
+                        debt.payments.push({
+                            date: new Date().toISOString(),
+                            amount: paymentForThis,
+                            note: note
+                        });
+                        
+                        remainingPayment -= paymentForThis;
+                    }
+                    
+                    await this.saveDataAsync();
+                    this.closeModal('payDebtModal');
+                    this.updateDebtSummary();
+                    this.renderDebtList();
+                    
+                    this.showToast(`Pembayaran Rp ${this.formatNumber(amount)} berhasil dicatat!`);
+                    
+                    if (this.isOnline && CONFIG.GOOGLE_SCRIPT_URL) {
+                        this.syncToCloud();
+                    }
+                    
+                    this.currentDebtPerson = null;
+                } finally {
+                    this.setLoading(false, 'payDebtModal');
+                    this.isSaving = false;
+                }
+            },
+
+            openDebtHistoryModal(personName) {
+                const personDebts = this.data.debts.filter(d => d.personName === personName)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const content = document.getElementById('debtHistoryContent');
+                
+                if (personDebts.length === 0) {
+                    content.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Tidak ada riwayat</p></div>';
+                } else {
+                    content.innerHTML = personDebts.map(debt => {
+                        const remaining = debt.remaining !== undefined ? debt.remaining : debt.amount;
+                        const isPaid = remaining === 0;
+                        
+                        return `
+                            <div style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid #e0e0e0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-weight: 600;">${debt.description || 'Tidak ada keterangan'}</span>
+                                    ${isPaid ? '<span class="debt-badge paid">LUNAS</span>' : '<span class="debt-badge">BELUM LUNAS</span>'}
+                                </div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                                    ${new Date(debt.date).toLocaleString('id-ID')}
+                                    ${debt.dueDate ? `| Jatuh tempo: ${new Date(debt.dueDate).toLocaleDateString('id-ID')}` : ''}
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                                    <div>
+                                        <div style="font-size: 11px; color: #999;">Total Hutang</div>
+                                        <div style="font-weight: 700;">Rp ${this.formatNumber(debt.amount)}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 11px; color: #999;">Dibayar</div>
+                                        <div style="font-weight: 700; color: var(--success);">Rp ${this.formatNumber(debt.amount - remaining)}</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 11px; color: #999;">Sisa</div>
+                                        <div style="font-weight: 700; color: ${isPaid ? 'var(--success)' : 'var(--danger)'};">Rp ${this.formatNumber(remaining)}</div>
+                                    </div>
+                                </div>
+                                ${debt.payments && debt.payments.length > 0 ? `
+                                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e0e0e0;">
+                                        <div style="font-size: 11px; color: #666; margin-bottom: 5px;">Riwayat Pembayaran:</div>
+                                        ${debt.payments.map(p => `
+                                            <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0;">
+                                                <span>${new Date(p.date).toLocaleString('id-ID')}</span>
+                                                <span style="color: var(--success); font-weight: 600;">Rp ${this.formatNumber(p.amount)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                this.openModal('debtHistoryModal');
+            },
+
+            // ==================== RECEIPT SECTION (MODIFIED) ====================
             initReceiptSection() {
                 this.ocrData = null;
                 document.getElementById('ocrFileInput').value = '';
                 document.getElementById('ocrPreviewContainer').style.display = 'none';
                 document.getElementById('ocrResultBox').style.display = 'none';
-                document.getElementById('btnProcessOCR').style.display = 'none';
                 document.getElementById('ocrUploadArea').style.display = 'block';
+                
+                // Reset manual form
+                document.getElementById('manualReceiptType').value = 'tarik';
+                document.getElementById('manualBankType').value = 'bri';
+                document.getElementById('manualNominal').value = '';
+                document.getElementById('manualAdmin').value = '';
+                document.getElementById('manualSender').value = '';
+                document.getElementById('manualReceiver').value = '';
+                document.getElementById('manualRef').value = '';
+                document.getElementById('manualNote').value = '';
             },
 
             setReceiptType(type) {
@@ -6446,7 +7343,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     document.getElementById('ocrPreviewContainer').style.display = 'block';
                     document.getElementById('ocrUploadArea').style.display = 'none';
                     
-                    // Start OCR processing
                     this.processOCR(e.target.result);
                 };
                 reader.readAsDataURL(file);
@@ -6465,7 +7361,7 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 try {
                     const result = await Tesseract.recognize(
                         imageData,
-                        'ind+eng', // Indonesian and English
+                        'ind+eng',
                         {
                             logger: (m) => {
                                 if (m.status === 'recognizing text') {
@@ -6478,15 +7374,11 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     const text = result.data.text;
                     console.log('OCR Result:', text);
                     
-                    // Parse the OCR text based on receipt type
                     this.ocrData = this.parseReceiptText(text);
-                    
-                    // Display results
                     this.displayOCRResults(this.ocrData);
                     
                     status.className = 'ocr-status success';
                     status.textContent = 'Berhasil membaca!';
-                    document.getElementById('btnProcessOCR').style.display = 'block';
                     
                 } catch (error) {
                     console.error('OCR Error:', error);
@@ -6514,7 +7406,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     status: 'Berhasil'
                 };
 
-                // Try to identify bank
                 const bankKeywords = {
                     'BRI': 'bri',
                     'BCA': 'bca',
@@ -6533,9 +7424,7 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                     }
                 }
 
-                // Parse based on receipt type
                 if (this.receiptType === 'tarik') {
-                    // Tarik Tunai parsing
                     for (let i = 0; i < lines.length; i++) {
                         const line = lines[i];
                         
@@ -6577,7 +7466,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         }
                     }
                 } else if (this.receiptType === 'topup') {
-                    // Top Up parsing
                     for (let i = 0; i < lines.length; i++) {
                         const line = lines[i];
                         
@@ -6610,12 +7498,10 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         }
                     }
                 } else if (this.receiptType === 'transfer') {
-                    // Transfer parsing - based on the example image
                     for (let i = 0; i < lines.length; i++) {
                         const line = lines[i];
                         const upperLine = line.toUpperCase();
                         
-                        // Look for Pengirim/Sender
                         if (upperLine.includes('PENGIRIM') || upperLine.includes('DARI') || upperLine.includes('FROM')) {
                             const nextLine = lines[i + 1];
                             if (nextLine && !nextLine.includes('Bank') && !nextLine.includes('Rek')) {
@@ -6623,7 +7509,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Look for Penerima/Receiver
                         if (upperLine.includes('PENERIMA') || upperLine.includes('TUJUAN') || upperLine.includes('TO')) {
                             const nextLine = lines[i + 1];
                             if (nextLine && !nextLine.includes('Bank') && !nextLine.includes('Rek')) {
@@ -6631,7 +7516,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Bank Asal
                         if (upperLine.includes('BANK ASAL') || upperLine.includes('DARI BANK')) {
                             const nextLine = lines[i + 1];
                             if (nextLine) {
@@ -6639,15 +7523,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Bank Tujuan
-                        if (upperLine.includes('BANK TUJUAN') || upperLine.includes('KE BANK')) {
-                            const nextLine = lines[i + 1];
-                            if (nextLine) {
-                                // Could be different from sender bank
-                            }
-                        }
-                        
-                        // Rekening Pengirim
                         if (upperLine.includes('REK. PENGIRIM') || upperLine.includes('REKENING PENGIRIM')) {
                             const match = line.match(/(\d{4}[\s*]+\d{4}[\s*]+\d{4}[\s*]+\d{4}|\d{10,})/);
                             if (match) {
@@ -6660,7 +7535,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Rekening Penerima
                         if (upperLine.includes('REK. PENERIMA') || upperLine.includes('REKENING PENERIMA')) {
                             const match = line.match(/(\*{4}[\s*]+\d{3}|\d{10,})/);
                             if (match) {
@@ -6673,7 +7547,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Nominal
                         if (upperLine.includes('NOMINAL') || upperLine.includes('JUMLAH')) {
                             const match = line.match(/Rp[\s.]?([\d.,]+)/);
                             if (match) {
@@ -6689,7 +7562,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Admin
                         if (upperLine.includes('ADMIN') || upperLine.includes('BIAYA')) {
                             const match = line.match(/Rp[\s.]?([\d.,]+)/);
                             if (match) {
@@ -6705,7 +7577,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Total
                         if (upperLine.includes('TOTAL') && !upperLine.includes('SUBTOTAL')) {
                             const match = line.match(/Rp[\s.]?([\d.,]+)/);
                             if (match) {
@@ -6721,7 +7592,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Reference Number
                         if (upperLine.includes('REF') || upperLine.includes('REFERENSI') || upperLine.includes('NO. TRANSAKSI')) {
                             const match = line.match(/(\d{10,})/);
                             if (match) {
@@ -6734,7 +7604,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Date
                         if (upperLine.includes('TANGGAL') || upperLine.includes('DATE')) {
                             const match = line.match(/(\d{1,2}[\/\-\s]\w+[\/\-\s]\d{2,4})/);
                             if (match) {
@@ -6742,7 +7611,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                             }
                         }
                         
-                        // Time
                         if (upperLine.includes('WAKTU') || upperLine.includes('TIME') || upperLine.includes('JAM')) {
                             const match = line.match(/(\d{2}:\d{2}:\d{2})/);
                             if (match) {
@@ -6751,13 +7619,11 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                         }
                     }
                     
-                    // If total not found, calculate from nominal + admin
                     if (data.total === 0 && data.nominal > 0) {
                         data.total = data.nominal + data.admin;
                     }
                 }
 
-                // Extract date/time from text if not found
                 if (!data.date) {
                     const dateMatch = text.match(/(\d{1,2})[\/\-\s](\w+)[\/\-\s](\d{2,4})/);
                     if (dateMatch) {
@@ -6776,7 +7642,6 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
             },
 
             parseNumber(str) {
-                // Handle various number formats: 150.000, 150,000, 150000
                 const clean = str.replace(/[.,](?=\d{3})/g, '').replace(/,/g, '.');
                 return parseInt(clean) || 0;
             },
@@ -6886,90 +7751,8 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 box.style.display = 'block';
             },
 
-            async processOCRResult() {
-                if (this.isSaving) return;
-                
-                if (!this.ocrData) {
-                    this.showToast('Tidak ada data untuk disimpan!');
-                    return;
-                }
-                
-                this.setLoading(true);
-                this.isSaving = true;
-
-                try {
-                    // Create transaction based on OCR data
-                    const transaction = {
-                        id: Date.now(),
-                        date: new Date().toISOString(),
-                        type: 'ocr_' + this.receiptType,
-                        items: [{
-                            name: this.getReceiptItemName(this.ocrData),
-                            price: this.ocrData.total || this.ocrData.nominal + this.ocrData.admin,
-                            cost: 0,
-                            qty: 1
-                        }],
-                        total: this.ocrData.total || this.ocrData.nominal + this.ocrData.admin,
-                        profit: this.ocrData.admin, // Admin fee is profit
-                        paymentMethod: 'transfer',
-                        status: 'completed',
-                        transactionNumber: 'OCR-' + Date.now().toString().slice(-8),
-                        ocrData: this.ocrData,
-                        ocrReference: this.ocrData.reference
-                    };
-                    
-                    // Update cash
-                    if (this.receiptType === 'tarik') {
-                        // Tarik tunai: cash out
-                        this.data.settings.currentCash -= this.ocrData.nominal;
-                    } else {
-                        // Top up/transfer: cash in (if applicable)
-                        // For transfers, we might not change cash unless it's a deposit
-                    }
-                    
-                    this.data.transactions.push(transaction);
-                    
-                    // Also record in cash transactions if applicable
-                    if (this.receiptType === 'tarik') {
-                        this.data.cashTransactions.push({
-                            id: Date.now(),
-                            date: new Date().toISOString(),
-                            type: 'out',
-                            amount: this.ocrData.nominal,
-                            category: 'tarik_tunai_ocr',
-                            note: `Tarik Tunai ${this.ocrData.bank} - Ref: ${this.ocrData.reference}`
-                        });
-                    }
-                    
-                    await this.saveDataAsync();
-                    
-                    // Reset OCR
-                    this.initReceiptSection();
-                    
-                    this.showToast('Struk berhasil disimpan! 🎉');
-                    
-                    // Switch to transactions tab
-                    this.switchTab('transactions');
-                } finally {
-                    this.setLoading(false);
-                    this.isSaving = false;
-                }
-            },
-
-            getReceiptItemName(data) {
-                switch(this.receiptType) {
-                    case 'tarik':
-                        return `Tarik Tunai ${data.bank}`;
-                    case 'topup':
-                        return `Top Up ${data.bank || 'E-Wallet'}`;
-                    case 'transfer':
-                        return `Transfer ${data.bank} ke ${data.receiver || data.receiverAccount}`;
-                    default:
-                        return 'Transaksi OCR';
-                }
-            },
-
-            saveManualReceipt() {
+            // MODIFIED: Generate receipt only, don't save to transaction
+            generateReceiptOnly() {
                 const type = document.getElementById('manualReceiptType').value;
                 const bank = document.getElementById('manualBankType').value;
                 const nominal = parseInt(document.getElementById('manualNominal').value) || 0;
@@ -6977,34 +7760,103 @@ Metode:     ${transaction.paymentMethod.toUpperCase()}
                 const sender = document.getElementById('manualSender').value;
                 const receiver = document.getElementById('manualReceiver').value;
                 const ref = document.getElementById('manualRef').value;
+                const note = document.getElementById('manualNote').value;
                 
                 if (nominal <= 0) {
                     this.showToast('Nominal wajib diisi!');
                     return;
                 }
                 
-                const ocrData = {
+                const receiptData = {
                     type: type,
                     bank: bank.toUpperCase(),
-                    sender: sender,
-                    receiver: receiver,
                     nominal: nominal,
                     admin: admin,
                     total: nominal + admin,
+                    sender: sender,
+                    receiver: receiver,
                     reference: ref,
+                    note: note,
                     date: new Date().toLocaleDateString('id-ID'),
-                    time: new Date().toLocaleTimeString('id-ID')
+                    time: new Date().toLocaleTimeString('id-ID'),
+                    receiptNumber: 'RCPT-' + Date.now().toString().slice(-8)
                 };
                 
-                this.ocrData = ocrData;
-                this.receiptType = type;
-                this.processOCRResult();
+                this.printReceiptOnly(receiptData);
+                this.showToast('Struk berhasil dicetak! (Tidak masuk ke laporan)');
+            },
+
+            printReceiptOnly(data) {
+                let title = '';
+                let details = '';
+                
+                if (data.type === 'tarik') {
+                    title = 'STRUK TARIK TUNAI';
+                    details = `
+Bank: ${data.bank}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total: Rp ${this.formatNumber(data.total)}
+                    `;
+                } else if (data.type === 'topup') {
+                    title = 'STRUK TOP UP';
+                    details = `
+Jenis: ${data.bank}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total Bayar: Rp ${this.formatNumber(data.total)}
+                    `;
+                } else {
+                    title = 'STRUK TRANSFER';
+                    details = `
+Bank: ${data.bank}
+Dari: ${data.sender || '-'}
+Ke: ${data.receiver || '-'}
+Nominal: Rp ${this.formatNumber(data.nominal)}
+Biaya Admin: Rp ${this.formatNumber(data.admin)}
+Total: Rp ${this.formatNumber(data.total)}
+                    `;
+                }
+                
+                const receipt = `
+================================
+    ${this.data.settings.storeName}
+    ${title}
+================================
+No: ${data.receiptNumber}
+Tgl: ${data.date} ${data.time}
+--------------------------------
+${details}
+--------------------------------
+No. Ref: ${data.reference || '-'}
+${data.note ? 'Catatan: ' + data.note : ''}
+================================
+    Struk ini hanya tanda terima
+    bukan bukti pembayaran resmi
+================================
+                `;
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>${title} - ${this.data.settings.storeName}</title>
+                        <style>
+                            body { font-family: monospace; white-space: pre; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>${receipt}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
             },
 
             // ==================== BACKUP & SETTINGS ====================
             updateBackupInfo() {
                 document.getElementById('infoProductCount').textContent = this.data.products.length;
                 document.getElementById('infoTransactionCount').textContent = this.data.transactions.length;
+                document.getElementById('infoDebtCount').textContent = this.data.debts.length; // NEW
             },
 
             exportExcel() {
