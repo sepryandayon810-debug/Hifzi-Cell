@@ -7777,40 +7777,40 @@ Metode         : ${transaction.paymentMethod.toUpperCase()}
                 box.style.display = 'block';
             },
 
-            // MODIFIED: Generate receipt only, don't save to transaction
-            generateReceiptOnly() {
-                const type = document.getElementById('manualReceiptType').value;
-                const bank = document.getElementById('manualBankType').value;
-                const nominal = parseInt(document.getElementById('manualNominal').value) || 0;
-                const admin = parseInt(document.getElementById('manualAdmin').value) || 0;
-                const sender = document.getElementById('manualSender').value;
-                const receiver = document.getElementById('manualReceiver').value;
-                const ref = document.getElementById('manualRef').value;
-                const note = document.getElementById('manualNote').value;
-    
-                if (nominal <= 0) {
-                    this.showToast('Nominal wajib diisi!');
-                    return;
-                }
-    
-                const receiptData = {
-                    type: type,
-                    bank: bank.toUpperCase(),
-                    nominal: nominal,
-                    admin: admin,
-                    total: nominal + admin,
-                    sender: sender,
-                    receiver: receiver,
-                    reference: ref,
-                    note: note,
-                    date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
-                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB',
-                    receiptNumber: 'RCPT-' + Date.now().toString().slice(-8)
-                };
-    
-                this.printReceiptOnly(receiptData);
-                this.showToast('Struk berhasil dicetak! (Tidak masuk ke laporan)');
-                },
+            // GANTI DARI yang error menjadi:
+generateReceiptOnly() {
+    const type = document.getElementById('manualReceiptType').value;
+    const bank = document.getElementById('manualBankType').value;
+    const nominal = parseInt(document.getElementById('manualNominal').value) || 0;
+    const admin = parseInt(document.getElementById('manualAdmin').value) || 0;
+    const sender = document.getElementById('manualSender').value;
+    const receiver = document.getElementById('manualReceiver').value;
+    const ref = document.getElementById('manualRef').value;
+    const note = document.getElementById('manualNote').value;
+
+    if (nominal <= 0) {
+        this.showToast('Nominal wajib diisi!');
+        return;
+    }
+
+    const receiptData = {
+        type: type,
+        bank: bank.toUpperCase(),
+        nominal: nominal,
+        admin: admin,
+        total: nominal + admin,
+        sender: sender,
+        receiver: receiver,
+        reference: ref,
+        note: note,
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB',
+        receiptNumber: 'RCPT-' + Date.now().toString().slice(-8)
+    };
+
+    this.printReceiptOnly(receiptData);
+    this.showToast('Struk berhasil dicetak! (Tidak masuk ke laporan)');
+}
                 
                 const receiptData = {
                     type: type,
